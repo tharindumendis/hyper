@@ -1,6 +1,5 @@
 package com.pos.hyper.controller;
 
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,10 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class WebController {
 
     @GetMapping("")
-    String getHome(){
-        return "hi.. team hyper you all set";
+    String sayHello() {
+        return "Hello team hyper, Let's Do this...";
     }
-
-
-
 }
