@@ -1,45 +1,57 @@
 package com.pos.hyper.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "products")
 public class Product {
-
-    @jakarta.persistence.Id
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
+
+    @Getter
+    @Column(unique = true)
     String barcode;
 
+
+    @Getter
     @NotBlank
     String name;
 
+    @Getter
     @NotNull
-    @Positive
-    int category_id;
+    int categoryId;
 
+    @Getter
+    @Enumerated(EnumType.STRING)
     @NotNull
-    Unit unit;
+    Unitt unit;
 
-    @NotNull
+    @Getter
     @Positive
-    double price;
+    @Column(nullable = false)
+    Double price;
 
-    @Positive
-    double cost;
+    @Getter
     String description;
+
+    @Getter
     String image;
 
+    @Getter
     @Positive
-    double quantity;
+    Double cost;
+
+    @Positive
+    Double quantity;
 
     public int getId() {
         return id;
@@ -57,44 +69,36 @@ public class Product {
         this.barcode = barcode;
     }
 
-    public String getName() {
+    public @NotBlank String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NotBlank String name) {
         this.name = name;
     }
 
-    public int getCategory_id() {
-        return category_id;
+    public @NotNull int getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory_id(int category_id) {
-        this.category_id = category_id;
+    public void setCategoryId(@NotNull int categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public Unit getUnit() {
+    public @NotNull Unitt getUnit() {
         return unit;
     }
 
-    public void setUnit(Unit unit) {
+    public void setUnit(@NotNull Unitt unit) {
         this.unit = unit;
     }
 
-    public double getPrice() {
+    public @Positive Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(@Positive Double price) {
         this.price = price;
-    }
-
-    public double getCost() {
-        return cost;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
     }
 
     public String getDescription() {
@@ -113,12 +117,19 @@ public class Product {
         this.image = image;
     }
 
-    public double getQuantity() {
+    public @Positive Double getCost() {
+        return cost;
+    }
+
+    public void setCost(@Positive Double cost) {
+        this.cost = cost;
+    }
+
+    public @Positive Double getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(@Positive Double quantity) {
         this.quantity = quantity;
     }
-
 }

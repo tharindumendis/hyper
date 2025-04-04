@@ -1,8 +1,8 @@
 package com.pos.hyper.controller;
 
-
 import com.pos.hyper.model.Product;
 import com.pos.hyper.repository.ProductRepository;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,15 +17,14 @@ public class ProductController {
     }
 
     @GetMapping("")
-    List<Product> findAll(){
+    List<Product> findAll() {
         return productRepository.findAll();
     }
 
     @PostMapping("")
-    Product save(@RequestBody Product product){
+    Product save(@Valid @RequestBody Product product) {
         return productRepository.save(product);
     }
-
 
 
 }
