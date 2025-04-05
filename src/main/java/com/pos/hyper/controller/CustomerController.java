@@ -29,5 +29,20 @@ public class CustomerController {
         return customerRepository.save(customer);
     }
 
+    @PutMapping("/{id}")
+    Customer update(@Valid @RequestBody Customer customer, @PathVariable Long id) {
+        Customer cust = customerRepository.findById(id).get();
+        cust.setName(customer.getName());
+        cust.setAddress(customer.getAddress());
+        cust.setPhone(customer.getPhone());
+        cust.setEmail(customer.getEmail());
+        return customerRepository.save(cust);
+    }
+
+    @DeleteMapping("/{id}")
+    void delete(@PathVariable Long id) {
+        customerRepository.deleteById(id);
+    }
+
 
 }

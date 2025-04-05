@@ -26,5 +26,19 @@ public class ProductController {
         return productRepository.save(product);
     }
 
+    @PutMapping("/{id}")
+    Product update(@Valid @RequestBody Product product, @PathVariable Long id) {
+        Product prod = productRepository.findById(id).get();
+        prod.setBarcode(product.getBarcode() != null ? product.getBarcode() : prod.getBarcode());
+        prod.setName(product.getName() != null ? product.getName() : prod.getName());
+        prod.setCategoryId(product.getCategoryId());
+        prod.setUnit(product.getUnit() != null ? product.getUnit() : prod.getUnit());
+        prod.setPrice(product.getPrice() != null ? product.getPrice() : prod.getPrice());
+        prod.setDescription(product.getDescription() != null ? product.getDescription() : prod.getDescription());
+        prod.setImage(product.getImage() != null ? product.getImage() : prod.getImage());
+        return productRepository.save(prod);
+    }
+
+
 
 }
