@@ -21,12 +21,10 @@ public class Order {
     @NotNull
     Double unitPrice;
 
+    // in parentage value
     int discount;
     @NotNull
     Double costPrice;
-
-    @NotNull
-    Double amount;
 
     public Long getId() {
         return id;
@@ -91,4 +89,9 @@ public class Order {
     public void setAmount(@NotNull Double amount) {
         this.amount = amount;
     }
+
+    @NotNull
+    Double amount;
+
+
 }

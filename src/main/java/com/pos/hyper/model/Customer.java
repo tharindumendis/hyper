@@ -2,8 +2,9 @@ package com.pos.hyper.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.stereotype.Component;
 
-
+@Component
 @Entity
 @Table(name = "customers")
 public class Customer {
