@@ -25,4 +25,18 @@ public class UserController {
     User addUser(@RequestBody User user) {
         return this.userRepository.save(user);
     }
+
+    @PutMapping("/{id}")
+    User updateUser(@RequestBody User user, @PathVariable Long id) {
+        User usr = userRepository.findById(id).get();
+        usr.setName(user.getName());
+        usr.setEmail(user.getEmail());
+        usr.setPassword(user.getPassword());
+        usr.setRole(user.getRole());
+        return userRepository.save(usr);
+    }
+    @DeleteMapping("/{id}")
+    void deleteUser(@PathVariable Long id) {
+        userRepository.deleteById(id);
+    }
 }

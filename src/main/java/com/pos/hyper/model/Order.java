@@ -1,68 +1,70 @@
 package com.pos.hyper.model;
 
-import io.micrometer.common.lang.NonNull;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "orders")
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
-    int customerId;
-    int InvoiceId;
-    int productId;
-    int quantity;
-    int unitPrice;
-    int discount;
-    int costPrice;
-    int total;
+    Long id;
+    @NotNull
+    @Column(nullable = false)
+    Long invoiceId;
+    @NotNull
+    Long productId;
+    @NotNull
+    Integer quantity;
+    @NotNull
+    Double unitPrice;
 
-    public int getId() {
+    int discount;
+    @NotNull
+    Double costPrice;
+
+    @NotNull
+    Double amount;
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public int getCustomerId() {
-        return customerId;
+    public @NotNull Long getInvoiceId() {
+        return invoiceId;
     }
 
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
+    public void setInvoiceId(@NotNull Long invoiceId) {
+        this.invoiceId = invoiceId;
     }
 
-    public int getInvoiceId() {
-        return InvoiceId;
-    }
-
-    public void setInvoiceId(int invoiceId) {
-        InvoiceId = invoiceId;
-    }
-
-    public int getProductId() {
+    public @NotNull Long getProductId() {
         return productId;
     }
 
-    public void setProductId(int productId) {
+    public void setProductId(@NotNull Long productId) {
         this.productId = productId;
     }
 
-    public int getQuantity() {
+    public @NotNull Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(@NotNull Integer quantity) {
         this.quantity = quantity;
     }
 
-    public int getUnitPrice() {
+    public @NotNull Double getUnitPrice() {
         return unitPrice;
     }
 
-    public void setUnitPrice(int unitPrice) {
+    public void setUnitPrice(@NotNull Double unitPrice) {
         this.unitPrice = unitPrice;
     }
 
@@ -74,19 +76,19 @@ public class Order {
         this.discount = discount;
     }
 
-    public int getCostPrice() {
+    public @NotNull Double getCostPrice() {
         return costPrice;
     }
 
-    public void setCostPrice(int costPrice) {
+    public void setCostPrice(@NotNull Double costPrice) {
         this.costPrice = costPrice;
     }
 
-    public int getTotal() {
-        return total;
+    public @NotNull Double getAmount() {
+        return amount;
     }
 
-    public void setTotal(int total) {
-        this.total = total;
+    public void setAmount(@NotNull Double amount) {
+        this.amount = amount;
     }
 }
