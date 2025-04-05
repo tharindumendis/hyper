@@ -3,10 +3,10 @@ package com.pos.hyper.controller;
 
 import com.pos.hyper.model.Order;
 import com.pos.hyper.repository.OrderRepository;
+import com.pos.hyper.validation.OrderValidation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,26 +18,25 @@ public class OrderController {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private OrderValidation orderValidation;
+
 
     @GetMapping("")
     List<Order> getOrders() {
         return orderRepository.findAll();
     }
 
-    @PostMapping
+    @PostMapping("")
     Order save(@Valid @RequestBody Order order) {
+        order = orderValidation.orderValidate(order);
         return orderRepository.save(order);
     }
 
     @PutMapping("/{id}")
     Order update(@Valid @RequestBody Order order, @PathVariable Long id) {
+        order = orderValidation.orderValidate(order);
         Order ord = orderRepository.findById(id).get();
-        ord.setProductId(order.getProductId());
-        ord.setQuantity(order.getQuantity());
-        ord.setUnitPrice(order.getUnitPrice());
-        ord.setDiscount(order.getDiscount());
-        ord.setCostPrice(order.getCostPrice());
-        ord.setAmount(order.getAmount());
         return orderRepository.save(ord);
     }
     @DeleteMapping("/{id}")
@@ -45,7 +44,5 @@ public class OrderController {
         orderRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
-
-
 
 }
