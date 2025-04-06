@@ -3,7 +3,9 @@ package com.pos.hyper.controller;
 
 import com.pos.hyper.model.Customer;
 import com.pos.hyper.repository.CustomerRepository;
+import com.pos.hyper.validation.CustomerValidation;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,7 +14,11 @@ import java.util.List;
 @RequestMapping("/api/customer")
 public class CustomerController {
 
+    @Autowired
     private final CustomerRepository customerRepository;
+
+    @Autowired
+    private CustomerValidation customerValidation;
 
     public CustomerController(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
@@ -25,12 +31,13 @@ public class CustomerController {
 
     @PostMapping("")
     Customer save(@Valid @RequestBody Customer customer){
-
+        customer= customerValidation.customerValidate(customer);
         return customerRepository.save(customer);
     }
 
     @PutMapping("/{id}")
     Customer update(@Valid @RequestBody Customer customer, @PathVariable Long id) {
+        customer = customerValidation.customerValidate(customer);
         Customer cust = customerRepository.findById(id).get();
         cust.setName(customer.getName());
         cust.setAddress(customer.getAddress());
