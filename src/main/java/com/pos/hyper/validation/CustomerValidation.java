@@ -76,6 +76,10 @@ public class CustomerValidation {
         if(!customer.getEmail().contains("@") || !customer.getEmail().contains(".")){
             return false;
         }
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        if (!customer.getEmail().matches(emailRegex)) {
+            return false;
+        }
         List<Customer> customers = customerRepository.findAll();
         for (Customer c : customers){
             if(!Objects.equals (c.getId(), customer.getId()) && Objects.equals(c.getEmail(), customer.getEmail())){
