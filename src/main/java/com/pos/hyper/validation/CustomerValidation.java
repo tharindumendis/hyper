@@ -50,7 +50,7 @@ public class CustomerValidation {
     }
 
     public boolean phoneValidation(Customer customer){
-        if (customer.getPhone() != null || !customer.getPhone().isEmpty()){
+        if (customer.getPhone() == null || !customer.getPhone().isEmpty()){
             return false;
         }
         List<Customer> customers = customerRepository.findAll();
@@ -64,7 +64,14 @@ public class CustomerValidation {
     }
 
     public boolean emailValidation(Customer customer){
+<<<<<<< Updated upstream
         if(customer.getEmail() == null && customer.getEmail().isEmpty()){
+=======
+        if (customer.getEmail() == null){
+            return true;
+        }
+        if(!customer.getEmail().isEmpty()){
+>>>>>>> Stashed changes
             return false;
         }
         List<Customer> customers = customerRepository.findAll();
@@ -73,6 +80,7 @@ public class CustomerValidation {
                 return false;
             }
         }
+
         return true;
     }
 }
