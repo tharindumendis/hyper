@@ -64,7 +64,7 @@ public class CustomerValidation {
     }
 
     public boolean emailValidation(Customer customer){
-        if(customer.getEmail() != null && !customer.getEmail().isEmpty()){
+        if(customer.getEmail() == null && customer.getEmail().isEmpty()){
             return false;
         }
         List<Customer> customers = customerRepository.findAll();
