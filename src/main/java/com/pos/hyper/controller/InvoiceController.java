@@ -3,7 +3,8 @@ package com.pos.hyper.controller;
 import com.pos.hyper.model.Invoice;
 import com.pos.hyper.repository.InvoiceRepository;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,19 +13,32 @@ import java.util.List;
 @RequestMapping("/api/invoice")
 public class InvoiceController {
 
-    @Autowired
-    private InvoiceRepository invoiceRepository;
+
+    private final InvoiceRepository invoiceRepository;
+
+    public InvoiceController(InvoiceRepository invoiceRepository) {
+        this.invoiceRepository = invoiceRepository;
+    }
 
     @GetMapping("")
     List<Invoice> getAllInvoices() {
         return invoiceRepository.findAll();
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<Invoice> getInvoice(@PathVariable Long id) {
+        return invoiceRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping("")
-    Invoice createInvoice(@Valid @RequestBody Invoice invoice) {
-        return invoiceRepository.save(invoice);
+    public ResponseEntity<Invoice> createInvoice(@Valid @RequestBody Invoice invoice) {
+        Invoice savedInvoice = invoiceRepository.save(invoice);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedInvoice);
     }
 
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     Invoice updateInvoice(@Valid @RequestBody Invoice invoice, @PathVariable Long id) {
         Invoice inv = invoiceRepository.findById(id).get();
         inv.setCustomerId(invoice.getCustomerId());
@@ -34,6 +48,7 @@ public class InvoiceController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteInvoice(@PathVariable Long id) {
         invoiceRepository.deleteById(id);
     }
