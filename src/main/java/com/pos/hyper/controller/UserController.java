@@ -20,6 +20,10 @@ public class UserController {
     List<User> getUsers() {
         return this.userRepository.findAll();
     }
+    @GetMapping("/{id}")
+    User getUser(@PathVariable Long id) {
+        return this.userRepository.findById(id).get();
+    }
 
     @PostMapping("")
     User addUser(@RequestBody User user) {
