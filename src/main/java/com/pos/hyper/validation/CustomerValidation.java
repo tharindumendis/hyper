@@ -36,11 +36,11 @@ public class CustomerValidation {
         }
 
         if(!phoneValidation(customer)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Phone is required or already exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Phone is invalid or already exists");
         }
 
         if(!emailValidation(customer)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Email already exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Email is invalid or already exists");
         }
         return customer;
     }
@@ -50,7 +50,10 @@ public class CustomerValidation {
     }
 
     public boolean phoneValidation(Customer customer){
-        if (customer.getPhone() == null || !customer.getPhone().isEmpty()){
+        if (customer.getPhone() == null || customer.getPhone().isEmpty()){
+            return false;
+        }
+        if(!customer.getPhone().trim().matches("\\d{10}")){
             return false;
         }
         List<Customer> customers = customerRepository.findAll();
@@ -64,14 +67,13 @@ public class CustomerValidation {
     }
 
     public boolean emailValidation(Customer customer){
-<<<<<<< Updated upstream
-        if(customer.getEmail() == null && customer.getEmail().isEmpty()){
-=======
-        if (customer.getEmail() == null){
+        if(customer.getEmail()==null){
             return true;
         }
-        if(!customer.getEmail().isEmpty()){
->>>>>>> Stashed changes
+        if(customer.getEmail().isEmpty()){
+            return false;
+        }
+        if(!customer.getEmail().contains("@") || !customer.getEmail().contains(".")){
             return false;
         }
         List<Customer> customers = customerRepository.findAll();
@@ -80,7 +82,6 @@ public class CustomerValidation {
                 return false;
             }
         }
-
         return true;
     }
 }
