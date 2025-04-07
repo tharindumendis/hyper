@@ -11,16 +11,19 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @NotNull
-    String name;
+    private String name;
 
-    String address;
+    private String address;
 
     @NotNull
     @Column(unique = true)
-    String phone;
+    private String phone;
+
+    @Column(unique = true)
+    private String email;
 
     public String getEmail() {
         return email;
@@ -61,8 +64,5 @@ public class Customer {
     public void setId(Long id) {
         this.id = id;
     }
-
-    @Column(unique = true)
-    String email;
 
 }
