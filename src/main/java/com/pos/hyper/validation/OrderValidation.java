@@ -2,6 +2,7 @@ package com.pos.hyper.validation;
 
 import com.pos.hyper.model.Order;
 import com.pos.hyper.model.Product;
+import com.pos.hyper.repository.InvoiceRepository;
 import com.pos.hyper.repository.ProductRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,8 @@ public class OrderValidation {
     }
 
     public Boolean invoiceValidation(Order order){
-        return productRepository.findById(order.getInvoiceId()).isPresent();
+    return true;
+        //return invoiceRepository.existsById(order.getInvoice().getId());
     }
 
     public Boolean productValidation(Order order){

@@ -1,6 +1,7 @@
 package com.pos.hyper.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -11,9 +12,20 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @NotNull
-    @Column(nullable = false)
-    Long invoiceId;
+
+    @ManyToOne
+    @JoinColumn(name = "invoice_id")
+    @JsonBackReference
+    private Invoice invoice;
+
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
+    }
+
     @NotNull
     Long productId;
     @NotNull
@@ -34,13 +46,6 @@ public class Order {
         this.id = id;
     }
 
-    public @NotNull Long getInvoiceId() {
-        return invoiceId;
-    }
-
-    public void setInvoiceId(@NotNull Long invoiceId) {
-        this.invoiceId = invoiceId;
-    }
 
     public @NotNull Long getProductId() {
         return productId;
