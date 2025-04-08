@@ -35,12 +35,19 @@ public class OrderController {
     Order getOrder(@PathVariable Long id) {
         return orderRepository.findById(id).get();
     }
+    @GetMapping("/invoice/{id}")
+    List<Order> getOrdersByInvoiceId(@PathVariable Long id) {
+        return orderRepository.findAllByInvoiceId(id);
+    }
+    @GetMapping("/product/{id}")
+    List<Order> getOrdersByProductId(@PathVariable Long id) {
+        return orderRepository.findAllByProductId(id);
+    }
     @PostMapping("")
     Order save(@Valid @RequestBody Order order) {
         order = orderValidation.orderValidate(order);
         return orderRepository.save(order);
     }
-
     @PutMapping("/{id}")
     Order update(@Valid @RequestBody Order order, @PathVariable Long id) {
         if (orderRepository.existsById(id)) {
