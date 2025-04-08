@@ -15,19 +15,19 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id ;
+    private int id ;
     @NotBlank
-    String name ;
+    private String name ;
 
     @Column(unique = true)
     @NotBlank
-    String email ;
+    private String email ;
 
     @NotBlank
-    String password ;
+    private String password ;
 
     @NotNull
-    Role role ;
+    private Role role ;
 
 
 
@@ -62,8 +62,5 @@ public class User {
     public void setRole(@NotNull Role role) {
         this.role = role;
     }
-
-
-
 
 }
