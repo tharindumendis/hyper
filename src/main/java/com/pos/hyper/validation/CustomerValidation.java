@@ -73,9 +73,6 @@ public class CustomerValidation {
         if(customer.getEmail().isEmpty()){
             return false;
         }
-        if(!customer.getEmail().contains("@") || !customer.getEmail().contains(".")){
-            return false;
-        }
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         if (!customer.getEmail().matches(emailRegex)) {
             return false;
