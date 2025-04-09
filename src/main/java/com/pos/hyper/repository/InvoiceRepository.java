@@ -1,7 +1,7 @@
 package com.pos.hyper.repository;
 
-import com.pos.hyper.model.Invoice;
+import com.pos.hyper.model.invoice.Invoice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
+public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 }

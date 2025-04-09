@@ -2,9 +2,8 @@ package com.pos.hyper.validation;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Objects;
 
-import com.pos.hyper.model.User;
+import com.pos.hyper.model.user.User;
 import com.pos.hyper.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,20 +48,10 @@ public class UserValidation {
     }
     public boolean emailValidation(User user){
         if(user.getEmail() == null || user.getEmail().trim().isEmpty()){
-            return false;
+            return true;
         }
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        if (!user.getEmail().matches(emailRegex)) {
-            return false;
-        }
+        return !userRepository.existsUserByEmail(user.getEmail());
 
-        List<User> users = userRepository.findAll();
-        for (User u : users){
-            if(!Objects.equals (u.getId(),user.getId())&& !Objects.equals (u.getEmail(), user.getEmail())){
-                return false;
-            }
-        }
-        return true;
     }
     public boolean passwordValidation(User user) {
         String password = user.getPassword();

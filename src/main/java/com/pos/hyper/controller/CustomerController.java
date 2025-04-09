@@ -1,7 +1,8 @@
 package com.pos.hyper.controller;
 
 
-import com.pos.hyper.model.Customer;
+import com.pos.hyper.model.customer.Customer;
+import com.pos.hyper.model.customer.CustomerDto;
 import com.pos.hyper.repository.CustomerRepository;
 import com.pos.hyper.validation.CustomerValidation;
 import jakarta.validation.Valid;
@@ -30,13 +31,18 @@ public class CustomerController {
     }
 
     @PostMapping("")
-    Customer save(@Valid @RequestBody Customer customer){
+    Customer save(@Valid @RequestBody CustomerDto customerDto) {
+        Customer customer = new Customer();
+        customer.setName(customerDto.name());
+        customer.setAddress(customerDto.address());
+        customer.setPhone(customerDto.phone());
+        customer.setEmail(customerDto.email());
         customer= customerValidation.customerValidate(customer);
         return customerRepository.save(customer);
     }
 
     @PutMapping("/{id}")
-    Customer update(@Valid @RequestBody Customer customer, @PathVariable Long id) {
+    Customer update(@Valid @RequestBody Customer customer, @PathVariable Integer id) {
         customer = customerValidation.customerValidate(customer);
         Customer cust = customerRepository.findById(id).get();
         cust.setName(customer.getName());
@@ -47,7 +53,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    void delete(@PathVariable Long id) {
+    void delete(@PathVariable Integer id) {
         customerRepository.deleteById(id);
     }
 
