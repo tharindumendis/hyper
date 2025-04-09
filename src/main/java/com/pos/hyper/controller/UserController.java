@@ -1,9 +1,8 @@
 package com.pos.hyper.controller;
 
-import com.pos.hyper.model.User;
+import com.pos.hyper.model.user.User;
 import com.pos.hyper.repository.UserRepository;
 import com.pos.hyper.validation.UserValidation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,11 +15,12 @@ public class UserController {
 
     private final UserRepository userRepository;
 
-    @Autowired
-    private UserValidation userValidation;
 
-    public UserController(UserRepository userRepository) {
+    private final UserValidation userValidation;
+
+    public UserController(UserRepository userRepository, UserValidation userValidation) {
         this.userRepository = userRepository;
+        this.userValidation = userValidation;
     }
 
     @GetMapping("")
@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
+    public User getUser(@PathVariable Integer id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found with id: " + id));
@@ -42,12 +42,12 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@RequestBody User user, @PathVariable Long id) {
+    public User updateUser(@RequestBody User user, @PathVariable Integer id) {
         user = userValidation.userValidate(user);
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "User not found with id: " + id));
-
+        existingUser.setId(id);
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());
         existingUser.setPassword(user.getPassword());
@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    public void deleteUser(@PathVariable Integer id) {
         if (!userRepository.existsById(id)) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND, "User not found with id: " + id);

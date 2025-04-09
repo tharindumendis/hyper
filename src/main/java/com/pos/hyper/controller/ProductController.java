@@ -1,6 +1,6 @@
 package com.pos.hyper.controller;
 
-import com.pos.hyper.model.Product;
+import com.pos.hyper.model.product.Product;
 import com.pos.hyper.repository.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class ProductController {
         return productRepository.findAll();
     }
     @GetMapping("/{id}")
-    Product findById(@PathVariable Long id) {
+    Product findById(@PathVariable Integer id) {
         return productRepository.findById(id).get();
     }
 
@@ -32,7 +32,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    Product update(@Valid @RequestBody Product product, @PathVariable Long id) {
+    Product update(@Valid @RequestBody Product product, @PathVariable Integer id) {
         Product prod = productRepository.findById(id).get();
         prod.setBarcode(product.getBarcode() != null ? product.getBarcode() : prod.getBarcode());
         prod.setName(product.getName() != null ? product.getName() : prod.getName());

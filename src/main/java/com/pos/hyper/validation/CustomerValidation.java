@@ -1,11 +1,10 @@
 package com.pos.hyper.validation;
 
 
-import com.pos.hyper.model.Customer;
+import com.pos.hyper.model.customer.Customer;
 import com.pos.hyper.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
