@@ -1,40 +1,40 @@
-package com.pos.hyper.model.inOrder;
-
+package com.pos.hyper.model.grn;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.pos.hyper.model.invoice.Invoice;
+import com.pos.hyper.model.inventory.Inventory;
 import com.pos.hyper.model.product.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-public class InOrder {
+public class Grn {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "invoice_id")
+    @ManyToOne
     @JsonBackReference
-    private Invoice invoice;
+    @JoinColumn(name = "inventory_id")
+    private Inventory inventory;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "product_id")
-    Product product;
+    private Product product;
 
     @Positive
     Double quantity;
-    Double unitPrice;
+    Double unitCost;
     Integer discount = null;// in parentage value
-    Double costPrice;
     Double amount;
-
-
 }
