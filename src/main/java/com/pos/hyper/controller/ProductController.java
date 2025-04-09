@@ -1,8 +1,13 @@
 package com.pos.hyper.controller;
 
+import com.pos.hyper.exception.GlobalExceptionHandler;
 import com.pos.hyper.model.product.Product;
+import com.pos.hyper.model.product.ProductDto;
+import com.pos.hyper.model.product.ProductService;
 import com.pos.hyper.repository.ProductRepository;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,39 +16,40 @@ import java.util.List;
 @RequestMapping("/api/product")
 //@CrossOrigin(origins = "http://localhost:5173") // we can set the origin here for access this controller api(Tharindu Mendis)
 public class ProductController {
-    private final ProductRepository productRepository;
 
-    public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    private final ProductService productService;
+    private final GlobalExceptionHandler globalExceptionHandler;
+
+
+    public ProductController(ProductService productService, GlobalExceptionHandler globalExceptionHandler) {
+        this.productService = productService;
+        this.globalExceptionHandler = globalExceptionHandler;
     }
 
     @GetMapping("")
-    List<Product> findAll() {
-        return productRepository.findAll();
+    public List<ProductDto> getAllProducts() {
+        return productService.getAllProducts();
     }
     @GetMapping("/{id}")
-    Product findById(@PathVariable Integer id) {
-        return productRepository.findById(id).get();
+    public ProductDto getProductById(@PathVariable Integer id) {
+        return productService.getProductById(id);
     }
-
     @PostMapping("")
-    Product save(@Valid @RequestBody Product product) {
-        return productRepository.save(product);
+    public ProductDto createProduct(@Valid @RequestBody ProductDto productDto) {
+        return productService.createProduct(productDto);
     }
-
     @PutMapping("/{id}")
-    Product update(@Valid @RequestBody Product product, @PathVariable Integer id) {
-        Product prod = productRepository.findById(id).get();
-        prod.setBarcode(product.getBarcode() != null ? product.getBarcode() : prod.getBarcode());
-        prod.setName(product.getName() != null ? product.getName() : prod.getName());
-        prod.setCategoryId(product.getCategoryId());
-        prod.setUnit(product.getUnit() != null ? product.getUnit() : prod.getUnit());
-        prod.setPrice(product.getPrice() != null ? product.getPrice() : prod.getPrice());
-        prod.setDescription(product.getDescription() != null ? product.getDescription() : prod.getDescription());
-        prod.setImage(product.getImage() != null ? product.getImage() : prod.getImage());
-        return productRepository.save(prod);
+    public ProductDto updateProduct(@PathVariable Integer id, @Valid @RequestBody ProductDto productDto) {
+        return productService.updateProduct(id, productDto);
+    }
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable Integer id) {
+        productService.deleteProduct(id);
     }
 
-
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
+        return globalExceptionHandler.handleMethodArgumentNotValid(exp);
+    }
 
 }

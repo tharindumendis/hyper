@@ -46,6 +46,7 @@ public class InOrderController {
     }
     @GetMapping("/product/{id}")
     List<InOrder> getInOrdersByProductId(@PathVariable Integer id) {
+
         return inOrderRepository.findAllByProductId(id);
     }
 

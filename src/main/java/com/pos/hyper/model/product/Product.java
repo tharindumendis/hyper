@@ -2,15 +2,18 @@ package com.pos.hyper.model.product;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pos.hyper.model.BaseEntity;
+import com.pos.hyper.model.category.Category;
 import com.pos.hyper.model.Discount;
+import com.pos.hyper.model.grn.Grn;
 import com.pos.hyper.model.inOrder.InOrder;
 import com.pos.hyper.model.Unitt;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -18,7 +21,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
@@ -30,8 +33,10 @@ public class Product extends BaseEntity {
     @NotBlank
     String name;
 
-    @NotNull
-    int categoryId;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    @JsonManagedReference
+    Category category;
 
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -39,13 +44,12 @@ public class Product extends BaseEntity {
     String description;
     String image;
 
-
-    @Positive
+    @PositiveOrZero
     @Column(nullable = false)
-    Double price;
+    Double price = 0.0;
 
-    @Positive
-    Double cost;
+    @PositiveOrZero
+    Double cost = 0.0;;
 
     private boolean isActive = true;
 
@@ -53,13 +57,16 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "discount_id")
     private Discount discount;
 
-
-    @Positive
-    Double quantity;
+    @PositiveOrZero
+    Double quantity = 0.0;
 
     @OneToMany(mappedBy = "product")
     @JsonBackReference
     @JsonIgnore
-
     List<InOrder> Inorder;
+
+    @OneToMany(mappedBy = "product")
+    @JsonBackReference
+    @JsonIgnore
+    List<Grn> grn;
 }

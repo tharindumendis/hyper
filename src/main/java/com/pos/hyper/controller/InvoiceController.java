@@ -37,6 +37,7 @@ public class InvoiceController {
     public ResponseEntity<Invoice> createInvoice(@Valid @RequestBody InvoiceDto invoiceDto) {
         Invoice invoice = new Invoice();
         Customer customer = new Customer();
+
         customer.setId(invoiceDto.customerId());
 
         invoice.setId(invoiceDto.id());
