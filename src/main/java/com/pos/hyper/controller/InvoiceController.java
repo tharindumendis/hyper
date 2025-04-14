@@ -1,12 +1,16 @@
 package com.pos.hyper.controller;
 
+import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.customer.Customer;
 import com.pos.hyper.model.invoice.Invoice;
 import com.pos.hyper.model.invoice.InvoiceDto;
+import com.pos.hyper.model.invoice.InvoiceMapper;
+import com.pos.hyper.model.invoice.InvoiceService;
 import com.pos.hyper.repository.InvoiceRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,53 +19,39 @@ import java.util.List;
 @RequestMapping("/api/invoice")
 public class InvoiceController {
 
+    private final InvoiceService invoiceService;
+    private final CustomExceptionHandler customExceptionHandler;
 
-    private final InvoiceRepository invoiceRepository;
 
-    public InvoiceController(InvoiceRepository invoiceRepository) {
-        this.invoiceRepository = invoiceRepository;
+    public InvoiceController(InvoiceService invoiceService, CustomExceptionHandler customexceptionHandler) {
+        this.invoiceService = invoiceService;
+        this.customExceptionHandler = customexceptionHandler;
     }
 
     @GetMapping("")
-    List<Invoice> getAllInvoices() {
-        return invoiceRepository.findAll();
+    public List<InvoiceDto> getAllInvoices() {
+        return invoiceService.getAllInvoices();
     }
     @GetMapping("/{id}")
-    public ResponseEntity<Invoice> getInvoice(@PathVariable Integer id) {
-        return invoiceRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public InvoiceDto getInvoiceById(@PathVariable Integer id) {
+        return invoiceService.getInvoiceById(id);
     }
 
     @PostMapping("")
-    public ResponseEntity<Invoice> createInvoice(@Valid @RequestBody InvoiceDto invoiceDto) {
-        Invoice invoice = new Invoice();
-        Customer customer = new Customer();
-
-        customer.setId(invoiceDto.customerId());
-
-        invoice.setId(invoiceDto.id());
-        invoice.setCustomer(customer);
-        invoice.setTotal(invoiceDto.total());
-
-        Invoice savedInvoice = invoiceRepository.save(invoice);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedInvoice);
+    public InvoiceDto createInvoice(@RequestBody InvoiceDto invoiceDto) {
+        return invoiceService.createInvoice(invoiceDto);
     }
-
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    Invoice updateInvoice(@Valid @RequestBody Invoice invoice, @PathVariable Integer id) {
-        Invoice inv = invoiceRepository.findById(id).get();
-        //inv.setCustomerId(invoice.getCustomerId());
-        inv.setCreatedAt(invoice.getCreatedAt());
-        inv.setTotal(invoice.getTotal());
-        return invoiceRepository.save(inv);
+    public InvoiceDto updateInvoice(@PathVariable Integer id, @RequestBody InvoiceDto invoiceDto) {
+        return invoiceService.updateInvoice(id, invoiceDto);
     }
-
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteInvoice(@PathVariable Integer id) {
-        invoiceRepository.deleteById(id);
+    public void deleteInvoice(@PathVariable Integer id) {
+        invoiceService.deleteInvoice(id);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
+        return customExceptionHandler.handleMethodArgumentNotValid(exp);
+    }
 }

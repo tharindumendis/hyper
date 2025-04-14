@@ -1,8 +1,12 @@
 package com.pos.hyper.controller;
 
-import com.pos.hyper.model.inventory.Inventory;
-import com.pos.hyper.repository.InventoryRepository;
+import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.inventory.InventoryDto;
+import com.pos.hyper.model.inventory.InventoryService;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,39 +15,36 @@ import java.util.List;
 @RequestMapping("/api/inventory")
 public class InventoryController {
 
-    private final InventoryRepository inventoryRepository;
-
-
-    public InventoryController(InventoryRepository inventoryRepository) {
-        this.inventoryRepository = inventoryRepository;
+    private final InventoryService inventoryService;
+    private final CustomExceptionHandler customExceptionHandler;
+    public InventoryController(InventoryService inventoryService, CustomExceptionHandler customExceptionHandler) {
+        this.inventoryService = inventoryService;
+        this.customExceptionHandler = customExceptionHandler;
     }
 
     @GetMapping("")
-    List<Inventory> getInventory(){
-        return inventoryRepository.findAll();
+    public List<InventoryDto> getAllInventories() {
+        return inventoryService.getAllInventories();
     }
-
     @GetMapping("/{id}")
-    Inventory getInventoryById(@PathVariable Integer id){
-        return inventoryRepository.findById(id).get();
+    public InventoryDto getInventoryById(@PathVariable Integer id) {
+        return inventoryService.getInventoryById(id);
     }
-
-    @PostMapping("")
-    Inventory addInventory(@Valid @RequestBody Inventory inventory){
-        return inventoryRepository.save(inventory);
+    @PostMapping(path = "",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public InventoryDto createInventory(@Valid @RequestBody InventoryDto inventoryDto) {
+        return inventoryService.createInventory(inventoryDto);
     }
-
     @PutMapping("/{id}")
-    Inventory updateInventory(@PathVariable Integer id, @Valid @RequestBody Inventory inventory) {
-        return inventoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventory not found"));
-
+    public InventoryDto updateInventory(@PathVariable Integer id, @Valid @RequestBody InventoryDto inventoryDto) {
+        return inventoryService.updateInventory(id, inventoryDto);
     }
     @DeleteMapping("/{id}")
-    void deleteInventory(@PathVariable Integer id){
-        inventoryRepository.deleteById(id);
+    public void deleteInventory(@PathVariable Integer id) {
+        inventoryService.deleteInventory(id);
     }
-
-
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
+        return customExceptionHandler.handleMethodArgumentNotValid(exp);
+    }
 
 }

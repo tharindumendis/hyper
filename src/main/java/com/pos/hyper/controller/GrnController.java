@@ -1,9 +1,11 @@
 package com.pos.hyper.controller;
 
-import com.pos.hyper.model.grn.Grn;
-import com.pos.hyper.repository.GrnRepository;
-import com.pos.hyper.repository.InventoryRepository;
+import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.grn.GrnDto;
+import com.pos.hyper.model.grn.GrnService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,40 +14,37 @@ import java.util.List;
 @RequestMapping("/api/grn")
 public class GrnController {
 
-    private final GrnRepository grnRepository;
-    private final InventoryRepository inventoryRepository;
+    private final GrnService grnService;
+    private final CustomExceptionHandler customExceptionHandler;
 
 
-    public GrnController(GrnRepository grnRepository, InventoryRepository inventoryRepository) {
-        this.grnRepository = grnRepository;
-        this.inventoryRepository = inventoryRepository;
+    public GrnController(GrnService grnService, CustomExceptionHandler customExceptionHandler) {
+        this.grnService = grnService;
+        this.customExceptionHandler = customExceptionHandler;
     }
-
-
     @GetMapping("")
-    List<Grn> getGrn(){
-        return grnRepository.findAll();
+    public List<GrnDto> getAllGrn() {
+        return grnService.getAllGrn();
     }
-
     @GetMapping("/{id}")
-    Grn getGrnById(Integer id){
-        return grnRepository.findById(id).get();
+    public GrnDto getGrnById(@PathVariable Integer id) {
+        return grnService.getGrnById(id);
     }
-
     @PostMapping("")
-    Grn addGrn(@Valid @RequestBody Grn grn){
-        return grnRepository.save(grn);
+    public GrnDto createGrn(@Valid @RequestBody GrnDto grnDto) {
+        return grnService.createGrn(grnDto);
     }
-
     @PutMapping("/{id}")
-    Grn updateGrn(@PathVariable Integer id, @Valid @RequestBody Grn grn) {
-        return grnRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventory not found"));
-
+    public GrnDto updateGrn(@PathVariable Integer id, @Valid @RequestBody GrnDto grnDto) {
+        return grnService.updateGrn(id, grnDto);
     }
     @DeleteMapping("/{id}")
-    void deleteGrn(@PathVariable Integer id){
-        grnRepository.deleteById(id);
+    public void deleteGrn(@PathVariable Integer id) {
+        grnService.deleteGrn(id);
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
+        return customExceptionHandler.handleMethodArgumentNotValid(exp);
     }
 
 }

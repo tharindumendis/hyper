@@ -1,12 +1,12 @@
 package com.pos.hyper.controller;
 
 
-import com.pos.hyper.model.customer.Customer;
+import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.customer.CustomerDto;
-import com.pos.hyper.repository.CustomerRepository;
-import com.pos.hyper.validation.CustomerValidation;
+import com.pos.hyper.model.customer.CustomerService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,47 +15,45 @@ import java.util.List;
 @RequestMapping("/api/customer")
 public class CustomerController {
 
-    @Autowired
-    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
+    private final CustomExceptionHandler customExceptionHandler;
 
-    @Autowired
-    private CustomerValidation customerValidation;
+    public CustomerController(CustomerService customerService, CustomExceptionHandler customExceptionHandler) {
+        this.customerService = customerService;
+        this.customExceptionHandler = customExceptionHandler;
 
-    public CustomerController(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
     }
 
+
     @GetMapping("")
-    List<Customer> findAll(){
-        return customerRepository.findAll();
+    List<CustomerDto> findAll(){
+        return customerService.getAllCustomers();
+    }
+
+    @GetMapping("/{id}")
+    CustomerDto findById(@PathVariable Integer id) {
+        return customerService.getCustomerById(id);
     }
 
     @PostMapping("")
-    Customer save(@Valid @RequestBody CustomerDto customerDto) {
-        Customer customer = new Customer();
-        customer.setName(customerDto.name());
-        customer.setAddress(customerDto.address());
-        customer.setPhone(customerDto.phone());
-        customer.setEmail(customerDto.email());
-        customer= customerValidation.customerValidate(customer);
-        return customerRepository.save(customer);
+    CustomerDto save(@Valid @RequestBody CustomerDto customerDto) {
+
+        return customerService.createCustomer(customerDto);
     }
 
     @PutMapping("/{id}")
-    Customer update(@Valid @RequestBody Customer customer, @PathVariable Integer id) {
-        customer = customerValidation.customerValidate(customer);
-        Customer cust = customerRepository.findById(id).get();
-        cust.setName(customer.getName());
-        cust.setAddress(customer.getAddress());
-        cust.setPhone(customer.getPhone());
-        cust.setEmail(customer.getEmail());
-        return customerRepository.save(cust);
+    CustomerDto update(@Valid @RequestBody CustomerDto customerDto, @PathVariable Integer id) {
+        return customerService.updateCustomer(id, customerDto);
     }
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Integer id) {
-        customerRepository.deleteById(id);
+        customerService.deleteCustomer(id);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
 
+        return customExceptionHandler.handleMethodArgumentNotValid(exp);
+    }
 }

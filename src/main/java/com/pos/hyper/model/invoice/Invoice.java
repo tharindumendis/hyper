@@ -29,7 +29,7 @@ public class Invoice extends BaseEntity {
     @NotNull
     Double total;
 
-    @OneToMany(mappedBy = "invoice")
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     @JsonManagedReference
     List<InOrder> inOrders;
 

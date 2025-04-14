@@ -1,16 +1,13 @@
 package com.pos.hyper.controller;
 
-import com.pos.hyper.exception.GlobalExceptionHandler;
+import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.supplier.SupplierDto;
 import com.pos.hyper.model.supplier.SupplierService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -18,11 +15,11 @@ import java.util.List;
 public class SupplierController {
 
     private final SupplierService supplierService;
-    private final GlobalExceptionHandler globalExceptionHandler;
+    private final CustomExceptionHandler customExceptionHandler;
 
-    public SupplierController(SupplierService supplierService, GlobalExceptionHandler globalExceptionHandler) {
+    public SupplierController(SupplierService supplierService, CustomExceptionHandler customExceptionHandler) {
         this.supplierService = supplierService;
-        this.globalExceptionHandler = globalExceptionHandler;
+        this.customExceptionHandler = customExceptionHandler;
     }
 
 
@@ -49,7 +46,7 @@ public class SupplierController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
-                return globalExceptionHandler.handleMethodArgumentNotValid(exp);
+                return customExceptionHandler.handleMethodArgumentNotValid(exp);
     }
 
 }

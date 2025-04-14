@@ -16,9 +16,10 @@ public class ProductMapper {
                 product.getUnit(),
                 product.getDescription(),
                 product.getImage(),
+                product.getDiscount(),
                 product.getPrice(),
                 product.getCost(),
-                product.isActive(),
+                product.getIsActive(),
                 product.getQuantity()
         );
     }
@@ -42,9 +43,10 @@ public class ProductMapper {
         product.setUnit(productDto.unit() != null ? productDto.unit():product.getUnit());
         product.setDescription(productDto.description() != null ? productDto.description():product.getDescription());
         product.setImage(productDto.image() != null ? productDto.image():product.getImage());
+        product.setDiscount(productDto.discount() != null ? productDto.discount():product.getDiscount());
         product.setPrice(productDto.price() != null ? productDto.price():product.getPrice());
         product.setCost(productDto.cost() != null ? productDto.cost():product.getCost());
-        product.setActive(product.isActive());
+        product.setIsActive(product.getIsActive());
         product.setQuantity(productDto.quantity() != null ? productDto.quantity():product.getQuantity());
 
         return product;
