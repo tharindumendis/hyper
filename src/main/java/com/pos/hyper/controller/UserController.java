@@ -1,9 +1,14 @@
 package com.pos.hyper.controller;
 
+import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.user.User;
+import com.pos.hyper.model.user.UserDto;
+import com.pos.hyper.model.user.UserService;
 import com.pos.hyper.repository.UserRepository;
 import com.pos.hyper.validation.UserValidation;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -12,56 +17,37 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+    private final UserService userService;
+    private final CustomExceptionHandler customExceptionHandler;
 
-    private final UserRepository userRepository;
-
-
-    private final UserValidation userValidation;
-
-    public UserController(UserRepository userRepository, UserValidation userValidation) {
-        this.userRepository = userRepository;
-        this.userValidation = userValidation;
+    public UserController(UserService userService, CustomExceptionHandler customExceptionHandler) {
+        this.userService = userService;
+        this.customExceptionHandler = customExceptionHandler;
     }
 
     @GetMapping("")
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return userService.getAllUsers();
     }
-
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Integer id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User not found with id: " + id));
+    public UserDto getUserById(@PathVariable Integer id) {
+        return userService.getUserById(id);
     }
-
     @PostMapping("")
-    public User addUser(@RequestBody User user) {
-        user = userValidation.userValidate(user);
-        return userRepository.save(user);
+    public UserDto createUser(@RequestBody UserDto userDto) {
+        return userService.createUser(userDto);
     }
-
-    @PutMapping("/{id}")
-    public User updateUser(@RequestBody User user, @PathVariable Integer id) {
-        user = userValidation.userValidate(user);
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User not found with id: " + id));
-        existingUser.setId(id);
-        existingUser.setName(user.getName());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setPassword(user.getPassword());
-        existingUser.setRole(user.getRole());
-
-        return userRepository.save(existingUser);
+    @PutMapping("")
+    public UserDto updateUser(@RequestBody UserDto userDto) {
+        return userService.updateUser(userDto);
     }
-
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Integer id) {
-        if (!userRepository.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "User not found with id: " + id);
-        }
-        userRepository.deleteById(id);
+        userService.deleteUser(id);
     }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
+        return customExceptionHandler.handleMethodArgumentNotValid(exp);
+    }
+
 }

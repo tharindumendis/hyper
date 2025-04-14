@@ -20,6 +20,7 @@ public record ProductDto(
         Unitt unit,
         String description,
         String image,
+        Integer discount,
         Double price,
         Double cost ,
         boolean isActive,

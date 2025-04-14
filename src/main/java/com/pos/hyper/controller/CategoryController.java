@@ -1,27 +1,24 @@
 package com.pos.hyper.controller;
 
-import com.pos.hyper.exception.GlobalExceptionHandler;
+import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.category.CategoryDto;
 import com.pos.hyper.model.category.CategoryService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/category")
 public class CategoryController {
     private final CategoryService categoryService;
-    private final GlobalExceptionHandler globalExceptionHandler;
+    private final CustomExceptionHandler customExceptionHandler;
 
-    public CategoryController(CategoryService categoryService, GlobalExceptionHandler globalExceptionHandler) {
+    public CategoryController(CategoryService categoryService, CustomExceptionHandler customExceptionHandler) {
         this.categoryService = categoryService;
-        this.globalExceptionHandler = globalExceptionHandler;
+        this.customExceptionHandler = customExceptionHandler;
     }
 
     @GetMapping("")
@@ -47,7 +44,7 @@ public class CategoryController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
 
-        return globalExceptionHandler.handleMethodArgumentNotValid(exp);
+        return customExceptionHandler.handleMethodArgumentNotValid(exp);
     }
 
 }

@@ -26,6 +26,8 @@ public class User extends BaseEntity {
     @NotBlank
     private String email ;
 
+    @Column(unique = true)
+    private String phone ;
 
     @NotBlank
     private String password ;

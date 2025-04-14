@@ -1,24 +1,25 @@
-package com.pos.hyper.model.customer;
+package com.pos.hyper.model.user;
 
+import com.pos.hyper.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-public record CustomerDto(
+public record UserDto(
         Integer id,
-
-        @NotBlank(message = "name cannot be blank or empty")
+        @NotNull(message = "name cannot be blank or empty")
         String name,
-        String address,
 
-        @NotNull(message = "phone cannot be null")
         @NotBlank(message = "phone cannot be blank or empty")
         @Pattern(regexp = "^\\d{10}$", message = "phone must be 10 digits")
         String phone,
 
         @Email(message = "email must be valid")
-        String email
-
+        String email,
+        @NotBlank
+        String password,
+        @NotNull
+        Role role
 ) {
 }

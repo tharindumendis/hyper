@@ -2,14 +2,10 @@ package com.pos.hyper.model.supplier;
 
 import com.pos.hyper.model.inventory.Inventory;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.aspectj.bridge.IMessage;
 
 import java.util.List;
 

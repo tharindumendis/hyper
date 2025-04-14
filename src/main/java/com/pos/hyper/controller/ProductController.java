@@ -1,10 +1,8 @@
 package com.pos.hyper.controller;
 
-import com.pos.hyper.exception.GlobalExceptionHandler;
-import com.pos.hyper.model.product.Product;
+import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.product.ProductDto;
 import com.pos.hyper.model.product.ProductService;
-import com.pos.hyper.repository.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,12 +16,12 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-    private final GlobalExceptionHandler globalExceptionHandler;
+    private final CustomExceptionHandler customExceptionHandler;
 
 
-    public ProductController(ProductService productService, GlobalExceptionHandler globalExceptionHandler) {
+    public ProductController(ProductService productService, CustomExceptionHandler customExceptionHandler) {
         this.productService = productService;
-        this.globalExceptionHandler = globalExceptionHandler;
+        this.customExceptionHandler = customExceptionHandler;
     }
 
     @GetMapping("")
@@ -47,9 +45,10 @@ public class ProductController {
         productService.deleteProduct(id);
     }
 
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
-        return globalExceptionHandler.handleMethodArgumentNotValid(exp);
+        return customExceptionHandler.handleMethodArgumentNotValid(exp);
     }
 
 }
