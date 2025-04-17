@@ -1,10 +1,10 @@
 package com.pos.hyper.model.grn;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.StockInventoryDto;
 import com.pos.hyper.model.inventory.Inventory;
-import com.pos.hyper.model.inventory.InventoryService;
+import com.pos.hyper.model.inventory.InventoryMapper;
 import com.pos.hyper.model.product.Product;
-import com.pos.hyper.model.product.ProductService;
 import com.pos.hyper.repository.GrnRepository;
 import com.pos.hyper.repository.InventoryRepository;
 import com.pos.hyper.repository.ProductRepository;
@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class GrnService {
@@ -21,14 +24,16 @@ public class GrnService {
     private final ProductRepository productRepository;
     private final GrnMapper grnMapper;
     private final CustomExceptionHandler customExceptionHandler;
+    private final InventoryMapper inventoryMapper;
 
 
-    public GrnService(GrnRepository grnRepository, InventoryRepository inventoryRepository, ProductRepository productRepository, GrnMapper grnMapper, CustomExceptionHandler customExceptionHandler) {
+    public GrnService(GrnRepository grnRepository, InventoryRepository inventoryRepository, ProductRepository productRepository, GrnMapper grnMapper, CustomExceptionHandler customExceptionHandler, InventoryMapper inventoryMapper) {
         this.grnRepository = grnRepository;
         this.inventoryRepository = inventoryRepository;
         this.productRepository = productRepository;
         this.grnMapper = grnMapper;
         this.customExceptionHandler = customExceptionHandler;
+        this.inventoryMapper = inventoryMapper;
     }
     public GrnDto createGrn(GrnDto grnDto) {
         if (grnDto.id() != null){
@@ -54,6 +59,57 @@ public class GrnService {
 
 
         return grnMapper.toGrnDto(grn);
+    }
+    public StockInventoryDto createStockInventory(List<GrnDto> sInventoryDto) {
+        List<Integer> productIds = sInventoryDto.stream()
+                .map(GrnDto::productId)
+                .distinct()
+                .toList();
+        Map<Integer, Product> productMap = productRepository.findAllById(productIds).stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        List<Grn> grnItems = new ArrayList<>();
+        Inventory inventory = inventoryRepository.findById(sInventoryDto.getFirst().inventoryId())
+                .orElseThrow(()-> customExceptionHandler.handleNotFoundException("Inventory with id " + sInventoryDto.getFirst().inventoryId() + " not found"));
+
+        for (GrnDto dto : sInventoryDto) {
+            Product product = productMap.get(dto.productId());
+
+
+            Grn item = new Grn();
+            if (dto.discount() == 0 ) {
+                item.setAmount(dto.unitCost() * dto.quantity());
+            }else{
+                // Calculate the discounted price
+                item.setAmount((dto.unitCost() * dto.quantity()) * (100 - dto.discount()) / 100);
+            }
+
+            validateGrn(dto);
+
+            item.setProduct(product);
+            item.setQuantity(dto.quantity());
+            item.setInventory(inventory);
+            item.setDiscount(dto.discount());
+            item.setUnitCost(dto.unitCost());
+
+            grnItems.add(item);
+
+
+        product.setQuantity(product.getQuantity() + dto.quantity());
+
+
+        }
+
+        List<Grn> savedGrnItems = grnRepository.saveAll(grnItems);
+
+        productRepository.saveAll(productMap.values());
+        inventory.setTotal(grnRepository.getTotalByInventory(inventory.getId()));
+        inventoryRepository.save(inventory);
+
+
+        return new StockInventoryDto(inventoryMapper.toInventoryDto(inventory),savedGrnItems.stream().map(grnMapper::toGrnDto).collect(Collectors.toList()));
+
+
     }
 
     @Transactional

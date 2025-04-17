@@ -41,44 +41,47 @@ public class HyperApplication {
 			InOrderService inOrderService, InOrderMapper inOrderMapper) {
  		return args -> {
 
-			 Customer customer = new Customer();
-			 customer.setName("John");
-			 customer.setPhone("1234567890");
-			 customer.setAddress("123 Main St");
-			 customer.setEmail("john@example.com");
-			 customer = customerRepository.save(customer);
+//			 Customer customer = new Customer();
+//			 customer.setName("John");
+//			 customer.setPhone("1234567890");
+//			 customer.setAddress("123 Main St");
+//			 customer.setEmail("john@example.com");
+//			 customer = customerRepository.save(customer);
+//
+//			 Category category = new Category();
+//			 category.setName("Electronics");
+//			 categoryRepository.save(category);
+//
+//			 Invoice invoice = new Invoice();
+//			 invoice.setCustomer(customer);
+//			 invoice.setTotal(0.0);
+//			 invoiceRepository.save(invoice);
+//
+//			 Supplier supplier = new Supplier();
+//			 supplier.setName("Acme Electronics");
+//			 supplier.setPhone("5550001234");
+//			 supplier.setAddress("123 Supplier St");
+//			 supplier.setEmail("supplier@example.com");
+//			 supplierRepository.save(supplier);
+//
+//			 Product product = new Product();
+//			 product.setName("Laptop");
+//			 product.setDescription("High-performance laptop");
+//			 product.setPrice(1000.0);
+//			 product.setCategory(category);
+//			 product.setCost(900.0);
+//			 product.setQuantity(0.0);
+//			 product.setUnit(Unitt.pcs);
+//			 product.setBarcode("1234567890");
+//			 productRepository.save(product);
+//
+//			 Inventory inventory = new Inventory();
+//			 inventory.setTotal(0.0);
+//			 inventory.setSupplier(supplier);
+//			 inventoryRepository.save(inventory);
 
-			 Category category = new Category();
-			 category.setName("Electronics");
-			 categoryRepository.save(category);
 
-			 Invoice invoice = new Invoice();
-			 invoice.setCustomer(customer);
-			 invoice.setTotal(0.0);
-			 invoiceRepository.save(invoice);
 
-			 Supplier supplier = new Supplier();
-			 supplier.setName("Acme Electronics");
-			 supplier.setPhone("5550001234");
-			 supplier.setAddress("123 Supplier St");
-			 supplier.setEmail("supplier@example.com");
-			 supplierRepository.save(supplier);
-
-			 Product product = new Product();
-			 product.setName("Laptop");
-			 product.setDescription("High-performance laptop");
-			 product.setPrice(1000.0);
-			 product.setCategory(category);
-			 product.setCost(0.0);
-			 product.setQuantity(0.0);
-			 product.setUnit(Unitt.pcs);
-			 product.setBarcode("1234567890");
-			 productRepository.save(product);
-
-			 Inventory inventory = new Inventory();
-			 inventory.setTotal(0.0);
-			 inventory.setSupplier(supplier);
-			 inventoryRepository.save(inventory);
 
 //			 Grn grn = new Grn();
 //			 grn.setProduct(product);

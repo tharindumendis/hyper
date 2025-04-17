@@ -1,7 +1,9 @@
 package com.pos.hyper.model.inOrder;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.SaleInvoiceDto;
 import com.pos.hyper.model.invoice.Invoice;
+import com.pos.hyper.model.invoice.InvoiceMapper;
 import com.pos.hyper.model.product.Product;
 import com.pos.hyper.repository.InOrderRepository;
 import com.pos.hyper.repository.InvoiceRepository;
@@ -22,14 +24,16 @@ public class InOrderService {
     private final InOrderRepository inOrderRepository;
     private final ProductRepository productRepository;
     private final InvoiceRepository invoiceRepository;
+    private final InvoiceMapper invoiceMapper;
 
 
-    public InOrderService(InOrderMapper inOrderMapper, CustomExceptionHandler customExceptionHandler, InOrderRepository inOrderRepository, ProductRepository productRepository, InvoiceRepository invoiceRepository) {
+    public InOrderService(InOrderMapper inOrderMapper, CustomExceptionHandler customExceptionHandler, InOrderRepository inOrderRepository, ProductRepository productRepository, InvoiceRepository invoiceRepository, InvoiceMapper invoiceMapper) {
         this.inOrderMapper = inOrderMapper;
         this.customExceptionHandler = customExceptionHandler;
         this.inOrderRepository = inOrderRepository;
         this.productRepository = productRepository;
         this.invoiceRepository = invoiceRepository;
+        this.invoiceMapper = invoiceMapper;
     }
     public List<InOrderDto> getAllInOrders() {
         List<InOrder> inOrders = inOrderRepository.findAll();
@@ -76,8 +80,7 @@ public class InOrderService {
 
         return inOrderMapper.toInOrderDto(inOrder);
     }
-    public List<InOrderDto> createInOrders(List<InOrderDto> inOrderDtos) {
-
+    public SaleInvoiceDto createInOrders(List<InOrderDto> inOrderDtos) {
 
         List<Integer> productIds = inOrderDtos.stream()
                 .map(InOrderDto::productId)
@@ -87,9 +90,9 @@ public class InOrderService {
         Map<Integer, Product> productMap = productRepository.findAllById(productIds).stream()
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
 
-
         List<InOrder> invoiceItems = new ArrayList<>();
-        Invoice invoice = invoiceRepository.findById(inOrderDtos.getFirst().invoiceId()).orElseThrow(()-> customExceptionHandler.handleNotFoundException("Invoice with id " + inOrderDtos.get(0).invoiceId() + " not found"));
+        Invoice invoice = invoiceRepository.findById(inOrderDtos.getFirst().invoiceId())
+                .orElseThrow(()-> customExceptionHandler.handleNotFoundException("Invoice with id " + inOrderDtos.get(0).invoiceId() + " not found"));
 
         for (InOrderDto dto : inOrderDtos) {
             Product product = productMap.get(dto.productId());
@@ -104,11 +107,9 @@ public class InOrderService {
             InOrder item = new InOrder();
             if (product.getDiscount() == 0 ) {
                 item.setAmount(product.getPrice() * dto.quantity());
-                System.out.println("+++++++++++ set without discount +++++++++++++" + item.getAmount()+"----"+product.getDiscount());
             }else{
                 // Calculate the discounted price
                 item.setAmount((product.getPrice() * dto.quantity()) * (100 - product.getDiscount()) / 100);
-                System.out.println("+++++++++++ set with discount +++++++++++++"+ item.getAmount()+"----"+product.getDiscount()+"-----"+product.getPrice() * dto.quantity() * (1 - product.getDiscount() / 100));
             }
 
             validateInOrder(dto,product.getQuantity(),dto.quantity());
@@ -126,36 +127,80 @@ public class InOrderService {
             product.setQuantity(product.getQuantity() - dto.quantity());
         }
 
-// Save all invoice items in one go
+            // Save all invoice items in one go
         List<InOrder> savedInOrders = inOrderRepository.saveAll(invoiceItems);
 
-// Save updated products and invoice
+            // Save updated products and invoice
          productRepository.saveAll(productMap.values());
          invoice.setTotal( inOrderRepository.getTotalByInvoice(invoice.getId()));
          invoiceRepository.save(invoice);
 
-        return savedInOrders.stream().map(inOrderMapper::toInOrderDto).collect(Collectors.toList());
-
-
-
-//        for (InOrderDto inOrderDto : inOrderDtos) {
-//            Product product = productRepository.findById(inOrderDto.productId())
-//                    .orElseThrow(() -> customExceptionHandler
-//                            .handleNotFoundException("Product with id " + inOrderDto.productId() + " not found"));
-//            Invoice invoice = invoiceRepository.findById(inOrderDto.invoiceId())
-//                    .orElseThrow(() -> customExceptionHandler
-//                            .handleNotFoundException(" Invoice with id " + inOrderDto.invoiceId() + " not found"));
-//            if (!product.getIsActive()) {
-//                throw customExceptionHandler.handleBadRequestException("Product with id " + product.getId() + " is not active");
-//            }
-//            InOrder inOrder = inOrderMapper.toInOrder(inOrderDto, product, invoice);
-//            inOrders.add(inOrder);
-//        }
-//        inOrders = inOrderRepository.saveAll(inOrders);
-//
-
+        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), savedInOrders.stream().map(inOrderMapper::toInOrderDto).collect(Collectors.toList()));
     }
+    @Transactional
+    public SaleInvoiceDto updateInOrders(Integer id, List<InOrderDto> inOrderDtos) {
+        List<Integer> inorderIds = inOrderDtos.stream()
+                .map(InOrderDto::id)
+                .distinct()
+                .toList();
 
+        Map<Integer, InOrder> inOrderMap = inOrderRepository.findAllById(inorderIds).stream()
+                .collect(Collectors.toMap(InOrder::getId, Function.identity()));
+
+
+
+        List<Integer> productIds = inOrderDtos.stream()
+                .map(InOrderDto::productId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Map<Integer, Product> productMap = productRepository.findAllById(productIds).stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        List<InOrder> invoiceItems = new ArrayList<>();
+        Invoice invoice = invoiceRepository.findById(inOrderDtos.getFirst().invoiceId()).orElseThrow(()-> customExceptionHandler.handleNotFoundException("Invoice with id " + inOrderDtos.get(0).invoiceId() + " not found"));
+
+        for (InOrderDto dto : inOrderDtos) {
+            Product product = productMap.get(dto.productId());
+            InOrder inOrder = inOrderMap.get(dto.id());
+
+            System.out.println("inOrder.getQuantity() = " + inOrder.getCostPrice());
+            if (product == null || !product.getIsActive()) {
+                throw new RuntimeException("Invalid product: " + dto.productId());
+            }
+            if (product.getQuantity() < dto.quantity()) {
+                throw new RuntimeException("Insufficient stock for product: " + dto.productId());
+            }
+
+            InOrder item = new InOrder();
+            item = inOrder;
+            if (inOrder.getDiscount() == 0 ) {
+                item.setAmount(inOrder.getUnitPrice() * dto.quantity());
+                System.out.println("inOrder.getAmount() ============ " + inOrder.getAmount()+"_________"+dto.quantity());
+            }else{
+                // Calculate the discounted price
+                item.setAmount((inOrder.getUnitPrice() * dto.quantity()) * (100 - inOrder.discount) / 100);
+            }
+
+            validateInOrder(dto,product.getQuantity(),dto.quantity());
+
+            item.setQuantity(dto.quantity());
+
+            invoiceItems.add(item);
+
+            // Update stock in-memory
+            product.setQuantity(product.getQuantity() - dto.quantity());
+        }
+
+        // Save all invoice items in one go
+        List<InOrder> savedInOrders = inOrderRepository.saveAll(invoiceItems);
+
+        // Save updated products and invoice
+        productRepository.saveAll(productMap.values());
+        invoice.setTotal( inOrderRepository.getTotalByInvoice(invoice.getId()));
+        invoiceRepository.save(invoice);
+        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice),savedInOrders.stream().map(inOrderMapper::toInOrderDto).collect(Collectors.toList()));
+    }
 
     @Transactional
     public InOrderDto updateInOrder(Integer id, InOrderDto inOrderDto) {
@@ -189,8 +234,14 @@ public class InOrderService {
         InOrder inOrder = inOrderRepository.findById(id)
                 .orElseThrow(() -> customExceptionHandler
                         .handleNotFoundException("InOrder with id " + id + " not found"));
+        Invoice invoice = invoiceRepository.findById(inOrder.getInvoice().getId()).orElseThrow(()->
+                customExceptionHandler.handleNotFoundException("invoice with id " + inOrder.getInvoice().getId() + " not found"));
 
         inOrderRepository.delete(inOrder);
+        Double total = inOrderRepository.getTotalByInvoice(invoice.getId());
+        invoice.setTotal(total);
+        invoiceRepository.save(invoice);
+
     }
 
 
@@ -242,4 +293,6 @@ public class InOrderService {
             throw customExceptionHandler.handleBadRequestExceptionSet(errors);
         }
     }
+
+
 }
