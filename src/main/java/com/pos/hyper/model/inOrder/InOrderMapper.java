@@ -65,4 +65,10 @@ public class InOrderMapper {
                 .map(this::toInOrderDto)
                 .toList();
     }
+
+    public List<InOrderDto> toInOrderDtoList(List<InOrder> inOrders) {
+        return inOrders.stream()
+                .map(this::toInOrderDto)
+                .toList();
+    }
 }

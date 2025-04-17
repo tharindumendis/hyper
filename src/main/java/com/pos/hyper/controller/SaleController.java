@@ -1,6 +1,6 @@
 package com.pos.hyper.controller;
 
-import com.pos.hyper.model.SaleInOrderDto;
+import com.pos.hyper.model.SaleInvoiceDto;
 import com.pos.hyper.model.inOrder.InOrder;
 import com.pos.hyper.model.inOrder.InOrderDto;
 import com.pos.hyper.model.inOrder.InOrderMapper;
@@ -34,39 +34,36 @@ public class SaleController {
         this.invoiceRepository = invoiceRepository;
     }
     @GetMapping("")
-    public List<SaleInOrderDto> getSale() {
-        List<SaleInOrderDto> saleInvoiceDtoList = new ArrayList<>();
-         saleInvoiceDtoList = invoiceService.getAllInvoices()
+    public List<SaleInvoiceDto> getSale() {
+        return invoiceService.getAllInvoices()
                  .stream()
                  .map(
-                         invoiceDto -> new SaleInOrderDto(
+                         invoiceDto -> new SaleInvoiceDto(
                                  invoiceDto,
                                  inOrderService.getAllByInvoiceId(invoiceDto.id())
                          )
                  )
                  .toList();
-        return saleInvoiceDtoList;
 
     }
     @GetMapping("/{id}")
-    public SaleInOrderDto getSaleById(@PathVariable Integer id) {
+    public SaleInvoiceDto getSaleById(@PathVariable Integer id) {
         Invoice invoice = invoiceRepository.findById(id).orElseThrow();
         List<InOrder> inOrders = inOrderRepository.findAllByInvoiceId(id);
-        return new SaleInOrderDto(invoiceMapper.toInvoiceDto(invoice), inOrderMapper.toDtoList(inOrders));
+        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), inOrderMapper.toDtoList(inOrders));
     }
 
-
-
-
-
-
     @PostMapping("")
-    public List<InOrderDto> createSale(@RequestBody SaleInOrderDto saleInvoiceDto) {
+    public SaleInvoiceDto createSale(@RequestBody SaleInvoiceDto saleInvoiceDto) {
         List<InOrderDto> inOrderDtoList = saleInvoiceDto.inOrdersDto();
-
         return inOrderService.createInOrders(inOrderDtoList);
     }
 
+    @PutMapping("/{id}")
+    public SaleInvoiceDto updateSale(@PathVariable Integer id, @RequestBody SaleInvoiceDto saleInvoiceDto) {
+        List<InOrderDto> inOrderDtoList = saleInvoiceDto.inOrdersDto();
+        return inOrderService.updateInOrders(id, inOrderDtoList);
+    }
 
 
 
