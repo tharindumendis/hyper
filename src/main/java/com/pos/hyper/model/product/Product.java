@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pos.hyper.model.BaseEntity;
+import com.pos.hyper.model.Stock.Stock;
 import com.pos.hyper.model.category.Category;
 import com.pos.hyper.model.grn.Grn;
 import com.pos.hyper.model.inOrder.InOrder;
@@ -68,6 +69,11 @@ public class Product extends BaseEntity {
     @JsonBackReference
     @JsonIgnore
     private List<Grn> grn;
+
+    @OneToMany
+    @JsonBackReference
+    @JsonIgnore
+    private List<Stock> stock;
 
 
     public Boolean getIsActive() {

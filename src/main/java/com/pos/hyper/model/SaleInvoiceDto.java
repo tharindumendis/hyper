@@ -6,7 +6,7 @@ import com.pos.hyper.model.invoice.InvoiceDto;
 import java.util.List;
 
 public record SaleInvoiceDto(
-        InvoiceDto invoiceDto,
-        List<InOrderDto> inOrdersDto
+        InvoiceDto invoice,
+        List<InOrderDto> items
 ) {
 }
