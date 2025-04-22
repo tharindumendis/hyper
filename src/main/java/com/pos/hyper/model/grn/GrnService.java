@@ -1,7 +1,9 @@
 package com.pos.hyper.model.grn;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.Stock.Stock;
 import com.pos.hyper.model.StockInventoryDto;
+import com.pos.hyper.model.Stock.StockService;
 import com.pos.hyper.model.inventory.Inventory;
 import com.pos.hyper.model.inventory.InventoryMapper;
 import com.pos.hyper.model.product.Product;
@@ -25,15 +27,17 @@ public class GrnService {
     private final GrnMapper grnMapper;
     private final CustomExceptionHandler customExceptionHandler;
     private final InventoryMapper inventoryMapper;
+    private final StockService stockService;
 
 
-    public GrnService(GrnRepository grnRepository, InventoryRepository inventoryRepository, ProductRepository productRepository, GrnMapper grnMapper, CustomExceptionHandler customExceptionHandler, InventoryMapper inventoryMapper) {
+    public GrnService(GrnRepository grnRepository, InventoryRepository inventoryRepository, ProductRepository productRepository, GrnMapper grnMapper, CustomExceptionHandler customExceptionHandler, InventoryMapper inventoryMapper, StockService stockService) {
         this.grnRepository = grnRepository;
         this.inventoryRepository = inventoryRepository;
         this.productRepository = productRepository;
         this.grnMapper = grnMapper;
         this.customExceptionHandler = customExceptionHandler;
         this.inventoryMapper = inventoryMapper;
+        this.stockService = stockService;
     }
     public GrnDto createGrn(GrnDto grnDto) {
         if (grnDto.id() != null){
@@ -52,6 +56,13 @@ public class GrnService {
         grn = saveGrnAfterDiscount(grn);
 
         product.setQuantity(product.getQuantity() + grn.getQuantity());
+        Stock stock = new Stock();
+        stock.setProduct(product);
+        stock.setQuantity(grn.getQuantity());
+        stock.setGrn(grn);
+        stock.setUnitCost(grn.getUnitCost());
+
+        stockService.createStock(stock);
         productRepository.save(product);
         //update inventory total
         inventory.setTotal(grnRepository.getTotalByInventory(grn.getInventory().getId()));
@@ -72,11 +83,13 @@ public class GrnService {
         Inventory inventory = inventoryRepository.findById(sInventoryDto.getFirst().inventoryId())
                 .orElseThrow(()-> customExceptionHandler.handleNotFoundException("Inventory with id " + sInventoryDto.getFirst().inventoryId() + " not found"));
 
+        List<Stock> stocks = new ArrayList<>();
         for (GrnDto dto : sInventoryDto) {
             Product product = productMap.get(dto.productId());
 
 
             Grn item = new Grn();
+            Stock stock = new Stock();
             if (dto.discount() == 0 ) {
                 item.setAmount(dto.unitCost() * dto.quantity());
             }else{
@@ -95,12 +108,21 @@ public class GrnService {
             grnItems.add(item);
 
 
-        product.setQuantity(product.getQuantity() + dto.quantity());
+            product.setQuantity(product.getQuantity() + dto.quantity());
+
+            stock.setProduct(product);
+            stock.setQuantity(dto.quantity());
+            stock.setGrn(item);
+            stock.setUnitCost(dto.unitCost());
+
+            stocks.add(stock);
 
 
         }
 
         List<Grn> savedGrnItems = grnRepository.saveAll(grnItems);
+
+        stockService.createStocks(stocks);
 
         productRepository.saveAll(productMap.values());
         inventory.setTotal(grnRepository.getTotalByInventory(inventory.getId()));

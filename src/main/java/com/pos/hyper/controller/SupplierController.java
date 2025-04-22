@@ -22,7 +22,6 @@ public class SupplierController {
         this.customExceptionHandler = customExceptionHandler;
     }
 
-
     @GetMapping("")
     public List<SupplierDto> getAllSuppliers() {
         return supplierService.getAllSuppliers();

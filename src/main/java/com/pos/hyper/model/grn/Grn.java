@@ -1,7 +1,9 @@
 package com.pos.hyper.model.grn;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.pos.hyper.model.Stock.Stock;
 import com.pos.hyper.model.inventory.Inventory;
 import com.pos.hyper.model.product.Product;
 import jakarta.persistence.*;
@@ -10,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -31,6 +35,12 @@ public class Grn {
     @JsonManagedReference
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @OneToMany
+    @JsonBackReference
+    @JsonIgnore
+    private List<Stock> stock;
+
 
     @Positive
     Double quantity;
