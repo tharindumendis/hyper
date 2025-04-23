@@ -47,15 +47,18 @@ public class StockService {
             stockRepository.save(stock);
         }
     }
-    public Double updateStocks(List<Integer> productIds, List<Double> saleQuantities) {
+    public List<Double> updateStocks(List<Integer> productIds, List<Double> saleQuantities) {
         if (productIds.size() != saleQuantities.size()) {
             throw new IllegalArgumentException("The number of product IDs and sale quantities must be the same.");
         }
+
         List<Stock> stockList = new ArrayList<>();
-        Double totalCost = 0.0;
+        List<Double> totalCosts= new ArrayList<>();
         for (int i = 0; i < productIds.size(); i++) {
+
             Integer productId = productIds.get(i);
             Double saleQuantity = saleQuantities.get(i);
+            Double totalCost = 0.0;
 
             List<Stock> stocks =  stockRepository.findByProductIdAndQuantityGreaterThanOrderByReceivedDateAsc(productId, 0);
             for (Stock stock : stocks) {
@@ -67,11 +70,15 @@ public class StockService {
                 saleQuantity -= deductAmount;
 
                 totalCost += deductAmount * stock.getUnitCost();
+
                 stockList.add(stock);
+
             }
+
+            totalCosts.add(totalCost);
         }
         stockRepository.saveAll(stockList);
-        return totalCost;
+        return totalCosts;
     }
 
 
