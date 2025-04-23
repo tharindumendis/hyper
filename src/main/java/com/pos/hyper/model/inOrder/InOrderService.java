@@ -146,8 +146,9 @@ public class InOrderService {
             // Save all invoice items in one go
         List<InOrder> savedInOrders = inOrderRepository.saveAll(invoiceItems);
 
-        // Update stock in the database
-        Double productTotalCost = stockService.updateStocks(productIdsForStocks, productQuantities);
+            // Update stock in the database
+        List<Double> totalCostList = stockService.updateStocks(productIdsForStocks, productQuantities);
+        System.out.println(totalCostList.stream().mapToInt(Double::intValue).sum());
 
             // Save updated products and invoice
          productRepository.saveAll(productMap.values());
