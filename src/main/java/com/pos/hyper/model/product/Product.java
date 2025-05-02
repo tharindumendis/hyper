@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pos.hyper.model.BaseEntity;
 import com.pos.hyper.model.Stock.Stock;
 import com.pos.hyper.model.category.Category;
-import com.pos.hyper.model.grn.Grn;
-import com.pos.hyper.model.inOrder.InOrder;
+import com.pos.hyper.model.grn_item.GRNItem;
+import com.pos.hyper.model.invoice_item.InvoiceItem;
 import com.pos.hyper.model.Unitt;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -47,28 +47,21 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Double price = 0.0;
 
-    @PositiveOrZero
-    private Double cost = 0.0;
-
-
     private boolean isActive = true;
 
     @NotNull
     @PositiveOrZero
     private Integer discount = 0;
 
-    @PositiveOrZero
-    private Double quantity = 0.0;
+    @OneToMany(mappedBy = "product")
+    @JsonBackReference
+    @JsonIgnore
+    private List<InvoiceItem> invoiceItem;
 
     @OneToMany(mappedBy = "product")
     @JsonBackReference
     @JsonIgnore
-    private List<InOrder> Inorder;
-
-    @OneToMany(mappedBy = "product")
-    @JsonBackReference
-    @JsonIgnore
-    private List<Grn> grn;
+    private List<GRNItem> grnItem;
 
     @OneToMany
     @JsonBackReference

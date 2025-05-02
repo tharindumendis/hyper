@@ -1,8 +1,8 @@
 package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.StockInventoryDto;
-import com.pos.hyper.model.StockInventoryService;
+import com.pos.hyper.DTO.StockGRNDto;
+import com.pos.hyper.model.StockGRNService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -13,24 +13,24 @@ import java.util.List;
 @RequestMapping("/api/stock")
 public class StockInventoryController {
 
-    private final StockInventoryService stockInventoryService;
+    private final StockGRNService stockGRNService;
     private final CustomExceptionHandler customExceptionHandler;
 
-    public StockInventoryController(StockInventoryService stockInventoryService, CustomExceptionHandler customExceptionHandler) {
-        this.stockInventoryService = stockInventoryService;
+    public StockInventoryController(StockGRNService stockGRNService, CustomExceptionHandler customExceptionHandler) {
+        this.stockGRNService = stockGRNService;
         this.customExceptionHandler = customExceptionHandler;
     }
 
     @GetMapping("")
-    public List<StockInventoryDto> getStockInventory() {
+    public List<StockGRNDto> getStockInventory() {
 
-        return stockInventoryService.getStockInventory();
+        return stockGRNService.getStockGRN();
     }
 
     @PostMapping("")
-    public StockInventoryDto createStock(@RequestBody StockInventoryDto sIDto) {
+    public StockGRNDto createStock(@RequestBody StockGRNDto sIDto) {
 
-        return stockInventoryService.createStock(sIDto);
+        return stockGRNService.createStock(sIDto);
     }
 
 

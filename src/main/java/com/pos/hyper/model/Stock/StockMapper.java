@@ -1,6 +1,7 @@
 package com.pos.hyper.model.Stock;
 
-import com.pos.hyper.model.grn.Grn;
+import com.pos.hyper.DTO.StockDto;
+import com.pos.hyper.model.grn_item.GRNItem;
 import com.pos.hyper.model.product.Product;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ public class StockMapper {
         return new StockDto(
                 stock.getId(),
                 stock.getProduct().getId(),
-                stock.getGrn().getId(),
+                stock.getGrnItem().getId(),
                 stock.getQuantity(),
                 stock.getUnitCost()
         );
@@ -21,13 +22,13 @@ public class StockMapper {
     public Stock toStock(StockDto stockDto) {
         Product product = new Product();
         product.setId(stockDto.productId());
-        Grn grn = new Grn();
-        grn.setId(stockDto.grnId());
+        GRNItem grnItem = new GRNItem();
+        grnItem.setId(stockDto.grnId());
 
         return Stock.builder()
                 .id(stockDto.id())
                 .product(product)
-                .grn(grn)
+                .grnItem(grnItem)
                 .quantity(stockDto.quantity())
                 .unitCost(stockDto.unitCost())
                 .build();

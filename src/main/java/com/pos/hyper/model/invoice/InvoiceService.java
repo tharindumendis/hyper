@@ -1,7 +1,8 @@
 package com.pos.hyper.model.invoice;
 
+import com.pos.hyper.DTO.InvoiceDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.customer.Customer;
+import com.pos.hyper.model.PaymentMethod;
 import com.pos.hyper.repository.InvoiceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,19 @@ public class InvoiceService {
 
         Invoice invoice = invoiceMapper.toInvoice(invoiceDto);
         invoice.setTotal(0.0);
+
+
+        if(invoiceDto.paymentMethod() == null){
+            invoice.setPaymentMethod(PaymentMethod.CASH);
+        }else {
+            try {
+                invoice.setPaymentMethod(PaymentMethod.valueOf(invoiceDto.paymentMethod()));
+            }catch (IllegalArgumentException e){
+                throw customExceptionHandler.handleBadRequestException("Invalid payment method: " + invoiceDto.paymentMethod());
+            }
+        }
+
+
         Invoice savedInvoice = invoiceRepository.save(invoice);
         return invoiceMapper.toInvoiceDto(savedInvoice);
     }

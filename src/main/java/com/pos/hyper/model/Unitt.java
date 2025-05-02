@@ -1,5 +1,35 @@
 package com.pos.hyper.model;
 
 public enum Unitt {
-    pcs,pkt,kg,g,meter,inch,foot,set,dozen
+    KG,
+    GRAM,
+    MILLIGRAM,
+    LITRE,
+    MILLILITRE,
+    PIECE,
+    PACKET,
+    BAG,
+    BOX,
+    BOTTLE,
+    CAN,
+    BUNCH,
+    METER,
+    ROLL,
+    SET,
+    PAIR,
+    DOZEN,
+    CARTON,
+    SHEET,
+    TON,
+    GALLON,
+    BARREL,
+    CUBIC_METER,
+    YARD,
+    FOOT,
+    INCH,
+    SLAB,
+    REEL,
+    LOAF,
+    TUBE,
+    SACHET
 }

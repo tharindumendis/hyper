@@ -1,10 +1,10 @@
 package com.pos.hyper.model.invoice;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.pos.hyper.model.BaseEntity;
+import com.pos.hyper.model.PaymentMethod;
 import com.pos.hyper.model.customer.Customer;
-import com.pos.hyper.model.inOrder.InOrder;
+import com.pos.hyper.model.invoice_item.InvoiceItem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -26,11 +26,13 @@ public class Invoice extends BaseEntity {
     @JoinColumn(name = "customer_id")
     Customer customer;
 
+    PaymentMethod paymentMethod;
+
     @NotNull
     Double total;
 
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
     @JsonManagedReference
-    List<InOrder> inOrders;
+    List<InvoiceItem> invoiceItems;
 
 }

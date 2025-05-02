@@ -2,7 +2,7 @@ package com.pos.hyper.controller;
 
 
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.customer.CustomerDto;
+import com.pos.hyper.DTO.CustomerDto;
 import com.pos.hyper.model.customer.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

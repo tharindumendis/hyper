@@ -1,13 +1,14 @@
 package com.pos.hyper.model;
 
+import com.pos.hyper.DTO.SaleInvoiceDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.inOrder.InOrder;
-import com.pos.hyper.model.inOrder.InOrderMapper;
-import com.pos.hyper.model.inOrder.InOrderService;
+import com.pos.hyper.model.invoice_item.InvoiceItem;
+import com.pos.hyper.model.invoice_item.InvoiceItemMapper;
+import com.pos.hyper.model.invoice_item.InvoiceItemService;
 import com.pos.hyper.model.invoice.Invoice;
 import com.pos.hyper.model.invoice.InvoiceMapper;
 import com.pos.hyper.model.invoice.InvoiceService;
-import com.pos.hyper.repository.InOrderRepository;
+import com.pos.hyper.repository.InvoiceItemRepository;
 import com.pos.hyper.repository.InvoiceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,20 +20,20 @@ import java.util.Objects;
 public class SaleInvoiceService {
 
     private final InvoiceService invoiceService;
-    private final InOrderService inOrderService;
+    private final InvoiceItemService invoiceItemService;
     private final InvoiceMapper invoiceMapper;
-    private final InOrderMapper inOrderMapper;
-    private final InOrderRepository inOrderRepository;
+    private final InvoiceItemMapper invoiceItemMapper;
+    private final InvoiceItemRepository invoiceItemRepository;
     private final InvoiceRepository invoiceRepository;
     private final CustomExceptionHandler customExceptionHandler;
 
 
-    public SaleInvoiceService(InvoiceService invoiceService, InOrderService inOrderService, InvoiceMapper invoiceMapper, InOrderMapper inOrderMapper, InOrderRepository inOrderRepository, InvoiceRepository invoiceRepository, CustomExceptionHandler customExceptionHandler) {
+    public SaleInvoiceService(InvoiceService invoiceService, InvoiceItemService invoiceItemService, InvoiceMapper invoiceMapper, InvoiceItemMapper invoiceItemMapper, InvoiceItemRepository invoiceItemRepository, InvoiceRepository invoiceRepository, CustomExceptionHandler customExceptionHandler) {
         this.invoiceService = invoiceService;
-        this.inOrderService = inOrderService;
+        this.invoiceItemService = invoiceItemService;
         this.invoiceMapper = invoiceMapper;
-        this.inOrderMapper = inOrderMapper;
-        this.inOrderRepository = inOrderRepository;
+        this.invoiceItemMapper = invoiceItemMapper;
+        this.invoiceItemRepository = invoiceItemRepository;
         this.invoiceRepository = invoiceRepository;
         this.customExceptionHandler = customExceptionHandler;
     }
@@ -43,7 +44,7 @@ public class SaleInvoiceService {
                 .map(
                         invoiceDto -> new SaleInvoiceDto(
                                 invoiceDto,
-                                inOrderService.getAllByInvoiceId(invoiceDto.id())
+                                invoiceItemService.getAllByInvoiceId(invoiceDto.id())
                         )
                 )
                 .toList();
@@ -51,21 +52,21 @@ public class SaleInvoiceService {
     }
     public SaleInvoiceDto getSaleById( Integer id) {
         Invoice invoice = invoiceRepository.findById(id).orElseThrow();
-        List<InOrder> inOrders = inOrderRepository.findAllByInvoiceId(id);
-        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), inOrderMapper.toDtoList(inOrders));
+        List<InvoiceItem> invoiceItems = invoiceItemRepository.findAllByInvoiceId(id);
+        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), invoiceItemMapper.toDtoList(invoiceItems));
     }
     public SaleInvoiceDto createSale(SaleInvoiceDto saleInvoiceDto) {
         if(!Objects.equals(saleInvoiceDto.items().getFirst().invoiceId(), saleInvoiceDto.invoice().id())){
             throw  customExceptionHandler.handleBadRequestException(" Invoice id does not match");
         }
-        return inOrderService.createInOrders(saleInvoiceDto.items());
+        return invoiceItemService.createInvoiceItems(saleInvoiceDto);
     }
     @Transactional
     public SaleInvoiceDto updateSale(Integer id, SaleInvoiceDto saleInvoiceDto) {
          if(!Objects.equals(saleInvoiceDto.items().getFirst().invoiceId(), saleInvoiceDto.invoice().id())){
             throw  customExceptionHandler.handleBadRequestException(" Invoice id does not match");
          }
-        return inOrderService.updateInOrders(id, saleInvoiceDto.items());
+        return invoiceItemService.updateInvoiceItems(id, saleInvoiceDto.items());
     }
 
 

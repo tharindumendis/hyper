@@ -1,14 +1,8 @@
 package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.customer.Customer;
-import com.pos.hyper.model.invoice.Invoice;
-import com.pos.hyper.model.invoice.InvoiceDto;
-import com.pos.hyper.model.invoice.InvoiceMapper;
+import com.pos.hyper.DTO.InvoiceDto;
 import com.pos.hyper.model.invoice.InvoiceService;
-import com.pos.hyper.repository.InvoiceRepository;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;

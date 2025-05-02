@@ -1,6 +1,7 @@
 package com.pos.hyper.model.supplier;
 
-import com.pos.hyper.model.inventory.Inventory;
+import com.pos.hyper.DTO.SupplierDto;
+import com.pos.hyper.model.grn.GRN;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,12 +35,12 @@ public class SupplierMapper {
         supplier.setEmail(supplierDto.email());
         return supplier;
     }
-    public Supplier toSupplier(SupplierDto supplierDto, Supplier supplier, List<Inventory> inventory) {
+    public Supplier toSupplier(SupplierDto supplierDto, Supplier supplier, List<GRN> grn) {
         supplier.setName(supplierDto.name());
         supplier.setAddress(supplierDto.address());
         supplier.setPhone(supplierDto.phone());
         supplier.setEmail(supplierDto.email());
-        supplier.setInventory(inventory);
+        supplier.setGrn(grn);
         return supplier;
     }
 

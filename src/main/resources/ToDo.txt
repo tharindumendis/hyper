@@ -1,2 +1,2 @@
 
-update qty when grn and invoice;
+update qty when grnItem and invoice;

@@ -1,5 +1,6 @@
 package com.pos.hyper.model.category;
 
+import com.pos.hyper.DTO.CategoryDto;
 import com.pos.hyper.model.product.Product;
 import org.springframework.stereotype.Service;
 

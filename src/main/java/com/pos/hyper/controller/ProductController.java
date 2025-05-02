@@ -1,12 +1,18 @@
 package com.pos.hyper.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.product.ProductDto;
+import com.pos.hyper.DTO.ProductDto;
+import com.pos.hyper.model.Unitt;
 import com.pos.hyper.model.product.ProductService;
+import com.pos.hyper.model.product.ProductStockDto;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,23 +34,52 @@ public class ProductController {
     public List<ProductDto> getAllProducts() {
         return productService.getAllProducts();
     }
+    @GetMapping("/stock")
+    public List<ProductStockDto> getAllProductsStock() {
+        return productService.getProductStock();
+    }
+
+    @GetMapping("/stock/{id}")
+    public ProductStockDto getProductStockById(@PathVariable Integer id) {
+        return productService.getProductStockById(id);
+    }
     @GetMapping("/{id}")
     public ProductDto getProductById(@PathVariable Integer id) {
         return productService.getProductById(id);
     }
-    @PostMapping("")
-    public ProductDto createProduct(@Valid @RequestBody ProductDto productDto) {
-        return productService.createProduct(productDto);
+
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ProductDto createProduct(
+            @RequestPart("product") String productJson,
+            @RequestPart("image") MultipartFile image) throws JsonProcessingException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ProductDto productDto = objectMapper.readValue(productJson, ProductDto.class);
+
+        return productService.createProduct(productDto, image);
     }
+
+    @PutMapping(value = "{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ProductDto updateProduct(
+            @PathVariable Integer id,
+            @RequestPart("product") String productJson,
+            @RequestPart("image") MultipartFile image) throws JsonProcessingException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ProductDto productDto = objectMapper.readValue(productJson, ProductDto.class);
+
+        return productService.updateProduct(productDto, image,id);
+    }
+
     @PutMapping("/{id}")
     public ProductDto updateProduct(@PathVariable Integer id, @Valid @RequestBody ProductDto productDto) {
         return productService.updateProduct(id, productDto);
     }
+
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
     }
-
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
