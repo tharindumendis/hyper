@@ -1,7 +1,7 @@
 package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.SaleInvoiceDto;
+import com.pos.hyper.DTO.SaleInvoiceDto;
 import com.pos.hyper.model.SaleInvoiceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

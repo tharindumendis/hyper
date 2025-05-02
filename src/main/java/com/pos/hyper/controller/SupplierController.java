@@ -1,7 +1,7 @@
 package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.supplier.SupplierDto;
+import com.pos.hyper.DTO.SupplierDto;
 import com.pos.hyper.model.supplier.SupplierService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

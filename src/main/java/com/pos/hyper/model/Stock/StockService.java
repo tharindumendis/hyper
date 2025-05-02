@@ -1,8 +1,10 @@
 package com.pos.hyper.model.Stock;
 
+import com.pos.hyper.DTO.StockDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.repository.StockRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,7 @@ public class StockService {
             stockRepository.save(stock);
         }
     }
+    @Transactional
     public List<Double> updateStocks(List<Integer> productIds, List<Double> saleQuantities) {
         if (productIds.size() != saleQuantities.size()) {
             throw new IllegalArgumentException("The number of product IDs and sale quantities must be the same.");
@@ -61,6 +64,10 @@ public class StockService {
             Double totalCost = 0.0;
 
             List<Stock> stocks =  stockRepository.findByProductIdAndQuantityGreaterThanOrderByReceivedDateAsc(productId, 0);
+            if (stocks.isEmpty()) {
+                totalCosts.add(0.0);
+                throw customExceptionHandler.handleBadRequestException("No stock available for product with ID: " + productId);
+            }
             for (Stock stock : stocks) {
                 if (saleQuantity <= 0) break;
 
@@ -77,7 +84,11 @@ public class StockService {
 
             totalCosts.add(totalCost);
         }
-        stockRepository.saveAll(stockList);
+        try {
+            stockRepository.saveAll(stockList);
+        } catch (Exception e) {
+            throw customExceptionHandler.handleBadRequestException("Failed to update stock for product IDs: " + productIds);
+        }
         return totalCosts;
     }
 

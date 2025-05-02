@@ -1,26 +1,12 @@
 package com.pos.hyper;
 
-import com.pos.hyper.model.Role;
-import com.pos.hyper.model.Unitt;
-import com.pos.hyper.model.category.Category;
-import com.pos.hyper.model.customer.Customer;
-import com.pos.hyper.model.grn.Grn;
-import com.pos.hyper.model.inOrder.InOrder;
-import com.pos.hyper.model.inOrder.InOrderDto;
-import com.pos.hyper.model.inOrder.InOrderMapper;
-import com.pos.hyper.model.inOrder.InOrderService;
-import com.pos.hyper.model.inventory.Inventory;
-import com.pos.hyper.model.invoice.Invoice;
-import com.pos.hyper.model.product.Product;
-import com.pos.hyper.model.supplier.Supplier;
+import com.pos.hyper.model.invoice_item.InvoiceItemMapper;
+import com.pos.hyper.model.invoice_item.InvoiceItemService;
 import com.pos.hyper.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootApplication
 public class HyperApplication {
@@ -36,33 +22,39 @@ public class HyperApplication {
 			CategoryRepository categoryRepository,
 			ProductRepository productRepository,
 			SupplierRepository supplierRepository,
-			InventoryRepository inventoryRepository,
-			GrnRepository grnRepository,
-			InOrderService inOrderService, InOrderMapper inOrderMapper) {
+			GRNRepository grnRepository,
+			GrnItemRepository grnItemRepository,
+			InvoiceItemService invoiceItemService, InvoiceItemMapper invoiceItemMapper) {
  		return args -> {
 
 //			 Customer customer = new Customer();
-//			 customer.setName("John");
+//			 customer.setName("Cash");
 //			 customer.setPhone("1234567890");
-//			 customer.setAddress("123 Main St");
-//			 customer.setEmail("john@example.com");
+//			 customer.setAddress("no Address");
+//			 customer.setEmail("nomail@mail.com");
 //			 customer = customerRepository.save(customer);
-//
+////
 //			 Category category = new Category();
-//			 category.setName("Electronics");
+//			 category.setName("None");
 //			 categoryRepository.save(category);
 //
 //			 Invoice invoice = new Invoice();
 //			 invoice.setCustomer(customer);
 //			 invoice.setTotal(0.0);
 //			 invoiceRepository.save(invoice);
-//
+
+
+
 //			 Supplier supplier = new Supplier();
-//			 supplier.setName("Acme Electronics");
-//			 supplier.setPhone("5550001234");
-//			 supplier.setAddress("123 Supplier St");
-//			 supplier.setEmail("supplier@example.com");
+//			 supplier.setName("unknown");
+//			 supplier.setPhone("1234567890");
+//			 supplier.setAddress("noAddress");
+//			 supplier.setEmail("nomail@mail.com");
 //			 supplierRepository.save(supplier);
+
+
+
+
 //
 //			 Product product = new Product();
 //			 product.setName("Laptop");
@@ -83,18 +75,18 @@ public class HyperApplication {
 
 
 
-//			 Grn grn = new Grn();
-//			 grn.setProduct(product);
-//			 grn.setQuantity(10.0);
-//			 grn.setUnitCost(100.0);
-//			 grn.setInventory(inventory);
-//			 grn.setDiscount(0);
-//			 grn.setUnitCost(100.0);
-//			 grn.setAmount(1000.0);
-//			 grnRepository.save(grn);
+//			 GrnItem grnItem = new GrnItem();
+//			 grnItem.setProduct(product);
+//			 grnItem.setQuantity(10.0);
+//			 grnItem.setUnitCost(100.0);
+//			 grnItem.setInventory(inventory);
+//			 grnItem.setDiscount(0);
+//			 grnItem.setUnitCost(100.0);
+//			 grnItem.setAmount(1000.0);
+//			 grnRepository.save(grnItem);
 //
-//			 List<InOrderDto> inOrders = new ArrayList<>();
-//			 InOrder inOrder = new InOrder();
+//			 List<InvoiceItemDto> invoiceItems = new ArrayList<>();
+//			 InvoiceItem inOrder = new InvoiceItem();
 //			 inOrder.setInvoice(invoice);
 //			 inOrder.setProduct(product);
 //			 inOrder.setQuantity(1.0);
@@ -102,9 +94,9 @@ public class HyperApplication {
 //			 inOrder.setDiscount(0);
 //			 inOrder.setCostPrice(100.0);
 //			 inOrder.setAmount(100.0);
-//			 inOrders.add(inOrderMapper.toInOrderDto(inOrder));
+//			 invoiceItems.add(inOrderMapper.toInOrderDto(inOrder));
 //
-//			 InOrder inOrder1 = new InOrder();
+//			 InvoiceItem inOrder1 = new InvoiceItem();
 //			 inOrder1.setInvoice(invoice);
 //			 inOrder1.setProduct(product);
 //			 inOrder1.setQuantity(2.0);
@@ -112,9 +104,9 @@ public class HyperApplication {
 //			 inOrder1.setDiscount(0);
 //			 inOrder1.setCostPrice(100.0);
 //			 inOrder1.setAmount(200.0);
-//			 inOrders.add(inOrderMapper.toInOrderDto(inOrder1));
+//			 invoiceItems.add(inOrderMapper.toInOrderDto(inOrder1));
 //
-//			 inOrderService.createInOrders(inOrders);
+//			 inOrderService.createInOrders(invoiceItems);
 //
 
  			System.out.println("######### set sample data set ###########");

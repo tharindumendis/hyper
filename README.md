@@ -2,12 +2,12 @@ Hyper POS
 
 📌 Overview
 
-Hyper POS is a modern Point of Sale (POS) system built using Spring Boot. It is designed to provide a seamless, efficient, and scalable solution for managing sales transactions, inventory, and customer data.
+Hyper POS is a modern Point of Sale (POS) system built using Spring Boot. It is designed to provide a seamless, efficient, and scalable solution for managing sales transactions, grn, and customer data.
 
 🚀 Features
 
 ✅ User authentication & role-based access control
-✅ Product & inventory management
+✅ Product & grn management
 ✅ Sales processing & receipt generation
 ✅ Customer management
 ✅ Reports & analytics dashboard

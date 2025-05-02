@@ -1,5 +1,6 @@
 package com.pos.hyper.model.supplier;
 
+import com.pos.hyper.DTO.SupplierDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.repository.SupplierRepository;
 import org.springframework.stereotype.Service;

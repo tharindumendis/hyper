@@ -1,6 +1,6 @@
 package com.pos.hyper.model.supplier;
 
-import com.pos.hyper.model.inventory.Inventory;
+import com.pos.hyper.model.grn.GRN;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +32,6 @@ public class Supplier {
 
     @OneToMany
     @JoinColumn(name = "product_id")
-    List<Inventory> inventory;
+    List<GRN> grn;
 
 }

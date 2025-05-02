@@ -1,7 +1,7 @@
 package com.pos.hyper.model.Stock;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.pos.hyper.model.grn.Grn;
+import com.pos.hyper.model.grn_item.GRNItem;
 import com.pos.hyper.model.product.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -38,7 +38,7 @@ public class Stock {
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "grn_id")
-    private Grn grn;
+    private GRNItem grnItem;
 
     @PrePersist
     protected void onCreate() {

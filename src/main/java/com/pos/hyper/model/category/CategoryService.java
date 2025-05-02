@@ -1,5 +1,6 @@
 package com.pos.hyper.model.category;
 
+import com.pos.hyper.DTO.CategoryDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.repository.CategoryRepository;
 import org.springframework.stereotype.Service;

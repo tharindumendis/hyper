@@ -1,5 +1,6 @@
 package com.pos.hyper.model.customer;
 
+import com.pos.hyper.DTO.CustomerDto;
 import com.pos.hyper.model.invoice.Invoice;
 import org.springframework.stereotype.Service;
 
