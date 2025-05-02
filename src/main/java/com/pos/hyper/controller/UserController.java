@@ -4,13 +4,9 @@ import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.user.User;
 import com.pos.hyper.model.user.UserDto;
 import com.pos.hyper.model.user.UserService;
-import com.pos.hyper.repository.UserRepository;
-import com.pos.hyper.validation.UserValidation;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -37,9 +33,9 @@ public class UserController {
     public UserDto createUser(@RequestBody UserDto userDto) {
         return userService.createUser(userDto);
     }
-    @PutMapping("")
-    public UserDto updateUser(@RequestBody UserDto userDto) {
-        return userService.updateUser(userDto);
+    @PutMapping("/{id}")
+    public UserDto updateUser(@RequestBody UserDto userDto, @PathVariable Integer id) {
+        return userService.updateUser(userDto, id);
     }
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Integer id) {

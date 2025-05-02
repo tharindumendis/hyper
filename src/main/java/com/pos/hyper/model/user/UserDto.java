@@ -19,7 +19,9 @@ public record UserDto(
         String email,
         @NotBlank
         String password,
-        @NotNull
-        Role role
+
+        Role role,
+
+        Boolean isActive
 ) {
 }

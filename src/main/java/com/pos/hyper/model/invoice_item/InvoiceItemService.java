@@ -75,22 +75,24 @@ public class InvoiceItemService {
 
     public InvoiceItemDto createInvoiceItem(InvoiceItemDto invoiceItemDto) {
 
-        Product product = productRepository.findById(invoiceItemDto.productId())
-                .orElseThrow(()->customExceptionHandler
-                        .handleNotFoundException("Product with id " + invoiceItemDto.productId() + " not found"));
-
+        ProductStockDto product = productRepository.fetchProductStockAndCostById(invoiceItemDto.productId());
+        if (product == null){
+                throw customExceptionHandler.handleNotFoundException("Product with id " + invoiceItemDto.productId() + " not found");
+        }
 
         Invoice invoice = invoiceRepository.findById(invoiceItemDto.invoiceId())
                 .orElseThrow(()-> customExceptionHandler
                         .handleNotFoundException(" Invoice with id " + invoiceItemDto.invoiceId() + " not found"));
-        if(!product.getIsActive()){
-            throw customExceptionHandler.handleBadRequestException("Product with id "+product.getId()+" is not active");
+        if(!product.isActive()){
+            throw customExceptionHandler.handleBadRequestException("Product with id "+product.id()+" is not active");
         }
 
-        InvoiceItem invoiceItem = invoiceItemMapper.toInvoiceItem(invoiceItemDto, product, invoice);
+        InvoiceItem invoiceItem = invoiceItemMapper.toInvoiceItem(invoiceItemDto, productMapper.toProduct(product), invoice);
+        invoiceItem.setCostPrice(product.cost());
+
         invoiceItem = invoiceItemRepository.save(invoiceItem);
 
-        updateProductAndInvoice(product, invoice, invoiceItem.getQuantity());
+        updateProductAndInvoice(productMapper.toProduct(product), invoice, invoiceItem.getQuantity());
 
         return invoiceItemMapper.toInvoiceItemDto(invoiceItem);
     }

@@ -38,6 +38,9 @@ public class CustomerService {
         validateCustomer(customerDto);
         Customer customer = customerMapper.toCustomer(customerDto);
         customer.setId(null);
+        if(customer.getIsActive()==null){
+            customer.setIsActive(Boolean.TRUE);
+        }
         customer = customerRepository.save(customer);
         return customerMapper.toCustomerDto(customer);
     }
