@@ -1,6 +1,6 @@
 package com.pos.hyper.model;
 
-import com.pos.hyper.DTO.StockGRNDto;
+import com.pos.hyper.DTO.PurchaseDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.grn_item.GRNItemService;
 import com.pos.hyper.model.grn.GRNService;
@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class StockGRNService {
+public class PurchaseService {
     private final GRNItemService grnItemService;
     private final GRNService grnService;
     private final CustomExceptionHandler customExceptionHandler;
 
 
-    public StockGRNService(GRNItemService grnItemService, GRNService grnService, CustomExceptionHandler customExceptionHandler) {
+    public PurchaseService(GRNItemService grnItemService, GRNService grnService, CustomExceptionHandler customExceptionHandler) {
         this.grnItemService = grnItemService;
         this.grnService = grnService;
         this.customExceptionHandler = customExceptionHandler;
@@ -24,19 +24,19 @@ public class StockGRNService {
 
 
 
-    public List<StockGRNDto> getStockGRN() {
+    public List<PurchaseDto> getStockGRN() {
 
         return grnService
                 .getAllGRNs()
                 .stream()
                 .map(
-                        GRNDto -> new StockGRNDto(
+                        GRNDto -> new PurchaseDto(
                                 GRNDto,
                                 grnItemService.getGRNItemByGRNId(GRNDto.id())
                         )
                 ).toList();
     }
-    public StockGRNDto createStock(StockGRNDto sIDto) {
+    public PurchaseDto createStock(PurchaseDto sIDto) {
 
 
         if(!Objects.equals(sIDto.items().getFirst().GRNId(), sIDto.grn().id())){

@@ -47,9 +47,14 @@ public class ProductService {
     }
     public ProductDto createProduct(ProductDto productDto, MultipartFile file) {
         validateProduct(productDto,"create");
-            Product product = productMapper.toProduct(productDto);
-            product = productRepository.save(product);
-        return uploadImage(file, product);
+        Product product = productMapper.toProduct(productDto);
+        product.setImage(null);
+        product = productRepository.save(product);
+        if(file != null){
+            return uploadImage(file, product);
+        }
+        return productMapper.toProductDto(product);
+
     }
 
     public ProductDto updateProduct(ProductDto productDto, MultipartFile file, Integer id) {

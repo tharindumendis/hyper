@@ -35,6 +35,8 @@ public class Customer extends BaseEntity {
     @JsonBackReference
     List<Invoice> invoices;
 
+    Boolean isActive = true ;
+
 
 
 }

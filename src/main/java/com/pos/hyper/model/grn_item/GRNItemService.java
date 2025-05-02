@@ -3,7 +3,7 @@ package com.pos.hyper.model.grn_item;
 import com.pos.hyper.DTO.GRNItemDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.Stock.Stock;
-import com.pos.hyper.DTO.StockGRNDto;
+import com.pos.hyper.DTO.PurchaseDto;
 import com.pos.hyper.model.Stock.StockService;
 import com.pos.hyper.model.grn.GRN;
 import com.pos.hyper.model.grn.GRNMapper;
@@ -71,7 +71,7 @@ public class GRNItemService {
 
         return grnItemMapper.toGRNItemDto(grnItem);
     }
-    public StockGRNDto createStockGRN(List<GRNItemDto> sGRNDto) {
+    public PurchaseDto createStockGRN(List<GRNItemDto> sGRNDto) {
         List<Integer> productIds = sGRNDto.stream()
                 .map(GRNItemDto::productId)
                 .distinct()
@@ -129,7 +129,7 @@ public class GRNItemService {
         grnRepository.save(grn);
 
 
-        return new StockGRNDto(grnMapper.toGRNDto(grn), savedGRNItemItems.stream().map(grnItemMapper::toGRNItemDto).collect(Collectors.toList()));
+        return new PurchaseDto(grnMapper.toGRNDto(grn), savedGRNItemItems.stream().map(grnItemMapper::toGRNItemDto).collect(Collectors.toList()));
 
 
     }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.DTO.ProductDto;
-import com.pos.hyper.model.Unitt;
 import com.pos.hyper.model.product.ProductService;
 import com.pos.hyper.model.product.ProductStockDto;
 import jakarta.validation.Valid;
@@ -49,7 +48,7 @@ public class ProductController {
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ProductDto createProduct(
+    public ProductDto createProductWithImage(
             @RequestPart("product") String productJson,
             @RequestPart("image") MultipartFile image) throws JsonProcessingException {
 
@@ -58,9 +57,14 @@ public class ProductController {
 
         return productService.createProduct(productDto, image);
     }
+    @PostMapping("")
+    public ProductDto createProduct(
+            @RequestBody ProductDto productDto) {
+        return productService.createProduct(productDto, null);
+    }
 
     @PutMapping(value = "{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ProductDto updateProduct(
+    public ProductDto updateProductWithoutImage(
             @PathVariable Integer id,
             @RequestPart("product") String productJson,
             @RequestPart("image") MultipartFile image) throws JsonProcessingException {
@@ -72,7 +76,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ProductDto updateProduct(@PathVariable Integer id, @Valid @RequestBody ProductDto productDto) {
+    public ProductDto updateProductWithoutImage(@PathVariable Integer id, @Valid @RequestBody ProductDto productDto) {
         return productService.updateProduct(id, productDto);
     }
 

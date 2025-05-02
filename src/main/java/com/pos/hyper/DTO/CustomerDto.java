@@ -18,7 +18,9 @@ public record CustomerDto(
         String phone,
 
         @Email(message = "email must be valid")
-        String email
+        String email,
+
+        Boolean isActive
 
 ) {
 }
