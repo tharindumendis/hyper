@@ -83,7 +83,7 @@ public class ProductService {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("Image uploaded successfully.");
 
-            String imageUrl = "/products/image/" + product.getId();
+            String imageUrl = "api/image/" + product.getId();
             product.setImage(imageUrl);
             productRepository.save(product);
             ;

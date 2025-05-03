@@ -36,16 +36,21 @@ public class PurchaseService {
                         )
                 ).toList();
     }
-    public PurchaseDto createStock(PurchaseDto sIDto) {
+    public PurchaseDto createPurchase(PurchaseDto sIDto) {
 
 
         if(!Objects.equals(sIDto.items().getFirst().GRNId(), sIDto.grn().id())){
             throw customExceptionHandler.handleBadRequestException("GRN ID does not match "+sIDto.items().getFirst().GRNId()+"///"+ sIDto.grn().id());
         }
 
-        return grnItemService.createStockGRN(sIDto.items());
+        return grnItemService.createGRNItems(sIDto.items());
     }
 
 
-
+    public PurchaseDto returnPurchase(Integer id, PurchaseDto sIDto) {
+        if(!Objects.equals(sIDto.items().getFirst().GRNId(), sIDto.grn().id())){
+            throw customExceptionHandler.handleBadRequestException("GRN ID does not match "+sIDto.items().getFirst().GRNId()+"///"+ sIDto.grn().id());
+        }
+        return grnItemService.updateGRNItems( sIDto.items());
+    }
 }

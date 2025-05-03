@@ -30,7 +30,11 @@ public class PurchaseController {
     @PostMapping("")
     public PurchaseDto createStock(@RequestBody PurchaseDto sIDto) {
 
-        return purchaseService.createStock(sIDto);
+        return purchaseService.createPurchase(sIDto);
+    }
+    @PutMapping("/{id}")
+    public PurchaseDto updateStock(@PathVariable Integer id, @RequestBody PurchaseDto sIDto) {
+        return purchaseService.returnPurchase(id, sIDto);
     }
 
 

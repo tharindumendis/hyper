@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
-@RequestMapping("/products/image")
+@RequestMapping("api/image")
 public class FileController {
 
     @GetMapping("{id}")
