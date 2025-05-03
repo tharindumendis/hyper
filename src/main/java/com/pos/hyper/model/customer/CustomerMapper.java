@@ -15,7 +15,9 @@ public class CustomerMapper {
                 customer.getAddress(),
                 customer.getPhone(),
                 customer.getEmail(),
-                customer.getIsActive()
+                customer.getIsActive(),
+                customer.getCreatedAt(),
+                customer.getUpdatedAt()
         );
     }
     public Customer toCustomer(CustomerDto customerDto) {
@@ -26,6 +28,8 @@ public class CustomerMapper {
         customer.setPhone(customerDto.phone());
         customer.setEmail(customerDto.email());
         customer.setIsActive(customerDto.isActive());
+        customer.setCreatedAt(customerDto.createdAt());
+        customer.setUpdatedAt(customerDto.updatedAt());
         return customer;
 
     }
@@ -35,6 +39,8 @@ public class CustomerMapper {
         customer.setPhone(customerDto.phone());
         customer.setEmail(customerDto.email());
         customer.setIsActive(customerDto.isActive());
+        customer.setCreatedAt(customerDto.createdAt());
+        customer.setUpdatedAt(customerDto.updatedAt());
         return customer;
     }
     public Customer toCustomer(CustomerDto customerDto, Customer customer, List<Invoice> invoices) {
@@ -44,6 +50,8 @@ public class CustomerMapper {
         customer.setEmail(customerDto.email());
         customer.setInvoices(invoices);
         customer.setIsActive(customerDto.isActive());
+        customer.setCreatedAt(customerDto.createdAt());
+        customer.setUpdatedAt(customerDto.updatedAt());
         return customer;
     }
 

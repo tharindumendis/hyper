@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+import java.time.LocalDateTime;
+
 public record CustomerDto(
         Integer id,
 
@@ -20,7 +22,9 @@ public record CustomerDto(
         @Email(message = "email must be valid")
         String email,
 
-        Boolean isActive
+        Boolean isActive,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 
 ) {
 }

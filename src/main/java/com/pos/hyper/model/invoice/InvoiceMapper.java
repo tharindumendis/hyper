@@ -15,7 +15,9 @@ public class InvoiceMapper {
                 invoice.getId(),
                 invoice.getCustomer().getId(),
                 invoice.getTotal(),
-                getPaymentMethod(invoice)
+                getPaymentMethod(invoice),
+                invoice.getCreatedAt(),
+                invoice.getUpdatedAt()
 
         );
     }

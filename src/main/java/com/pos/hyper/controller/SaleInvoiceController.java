@@ -36,8 +36,8 @@ public class SaleInvoiceController {
     }
 
     @PutMapping("/{id}")
-    public SaleInvoiceDto updateSale(@PathVariable Integer id, @RequestBody SaleInvoiceDto saleInvoiceDto) {
-        return saleInvoiceService.updateSale(id, saleInvoiceDto);
+    public SaleInvoiceDto returnSale(@PathVariable Integer id, @RequestBody SaleInvoiceDto saleInvoiceDto) {
+        return saleInvoiceService.returnSale(id, saleInvoiceDto);
     }
 
 
