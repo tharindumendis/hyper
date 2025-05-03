@@ -35,4 +35,5 @@ public class Invoice extends BaseEntity {
     @JsonManagedReference
     List<InvoiceItem> invoiceItems;
 
+
 }

@@ -4,10 +4,11 @@ import com.pos.hyper.DTO.InvoiceItemDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.DTO.SaleInvoiceDto;
 import com.pos.hyper.model.PaymentMethod;
-import com.pos.hyper.model.Stock.Stock;
 import com.pos.hyper.model.Stock.StockService;
 import com.pos.hyper.model.invoice.Invoice;
 import com.pos.hyper.model.invoice.InvoiceMapper;
+import com.pos.hyper.model.invoiceStockConsumption.InvoiceStockConsumption;
+import com.pos.hyper.model.invoiceStockConsumption.InvoiceStockConsumptionService;
 import com.pos.hyper.model.product.Product;
 import com.pos.hyper.model.product.ProductMapper;
 import com.pos.hyper.model.product.ProductService;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,9 +39,10 @@ public class InvoiceItemService {
     private final StockRepository stockRepository;
     private final ProductService productService;
     private final ProductMapper productMapper;
+    private final InvoiceStockConsumptionService iscService;
 
 
-    public InvoiceItemService(InvoiceItemMapper invoiceItemMapper, CustomExceptionHandler customExceptionHandler, InvoiceItemRepository invoiceItemRepository, ProductRepository productRepository, InvoiceRepository invoiceRepository, InvoiceMapper invoiceMapper, StockService stockService, StockRepository stockRepository, ProductService productService, ProductMapper productMapper) {
+    public InvoiceItemService(InvoiceItemMapper invoiceItemMapper, CustomExceptionHandler customExceptionHandler, InvoiceItemRepository invoiceItemRepository, ProductRepository productRepository, InvoiceRepository invoiceRepository, InvoiceMapper invoiceMapper, StockService stockService, StockRepository stockRepository, ProductService productService, ProductMapper productMapper, InvoiceStockConsumptionService invoiceStockConsumptionService) {
         this.invoiceItemMapper = invoiceItemMapper;
         this.customExceptionHandler = customExceptionHandler;
         this.invoiceItemRepository = invoiceItemRepository;
@@ -50,6 +53,7 @@ public class InvoiceItemService {
         this.stockRepository = stockRepository;
         this.productService = productService;
         this.productMapper = productMapper;
+        this.iscService = invoiceStockConsumptionService;
     }
     public List<InvoiceItemDto> getAllInvoiceItems() {
         List<InvoiceItem> invoiceItems = invoiceItemRepository.findAll();
@@ -89,6 +93,11 @@ public class InvoiceItemService {
 
         InvoiceItem invoiceItem = invoiceItemMapper.toInvoiceItem(invoiceItemDto, productMapper.toProduct(product), invoice);
         invoiceItem.setCostPrice(product.cost());
+        invoiceItem.setQuantity(invoiceItemDto.quantity());
+        invoiceItem.setUnitPrice(product.price());
+        invoiceItem.setInvoice(invoice);
+        invoiceItem.setDiscount(product.discount());
+        invoiceItem.setCostPrice(product.cost());
 
         invoiceItem = invoiceItemRepository.save(invoiceItem);
 
@@ -115,7 +124,8 @@ public class InvoiceItemService {
         Map<Integer, ProductStockDto> productMap = productRepository.fetchProductStockAndCostByIds(productIds).stream()
                 .collect(Collectors.toMap(ProductStockDto::id, Function.identity()));
 
-        List<InvoiceItem> invoiceItems = new ArrayList<>();
+
+
         Invoice invoice = invoiceRepository.findById(invoiceItemDtos.getFirst().invoiceId())
                 .orElseThrow(()-> customExceptionHandler.handleNotFoundException("Invoice with id " + invoiceItemDtos.get(0).invoiceId() + " not found"));
 
@@ -123,8 +133,11 @@ public class InvoiceItemService {
                 invoice.setPaymentMethod(reqInvoice.getPaymentMethod());
         }
 
+        List<InvoiceItem> invoiceItems = new ArrayList<>();
+        List<List<InvoiceStockConsumption>> listOfISCList = new ArrayList<>();
         List<Integer> productIdsForStocks = new ArrayList<>();
         List<Double> productQuantities = new ArrayList<>();
+
 
         for (InvoiceItemDto dto : invoiceItemDtos) {
             ProductStockDto product = productMap.get(dto.productId());
@@ -159,83 +172,92 @@ public class InvoiceItemService {
 
         }
 
-            // Save all invoice items
+        listOfISCList = stockService.updateStocksForInvoices(productIdsForStocks, productQuantities);
+
+
+
+        // Save all invoice items
         List<InvoiceItem> savedInvoiceItems = invoiceItemRepository.saveAll(invoiceItems);
+        for (InvoiceItem item : savedInvoiceItems) {
+            int index = savedInvoiceItems.indexOf(item);
+            List<InvoiceStockConsumption> iscList = listOfISCList.get(index);
+            iscList.forEach(isc -> isc.setInvoiceItem(item));
+            iscService.createAllISCs(iscList);
+        }
 
-            // Update stock in the database
-        List<Double> totalCostList = stockService.updateStocks(productIdsForStocks, productQuantities);
-
-        System.out.println(totalCostList.stream().mapToInt(Double::intValue).sum());
-
-            // Save updated products and invoice
-         productRepository.saveAll(productMap.values().stream().map(productMapper::toProduct).collect(Collectors.toList()));
          invoice.setTotal( invoiceItemRepository.getTotalByInvoice(invoice.getId()));
 
          invoiceRepository.save(invoice);
 
 
 
-        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), savedInvoiceItems.stream().map(invoiceItemMapper::toInvoiceItemDto).collect(Collectors.toList()));
+        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), invoiceItemRepository.findAllByInvoiceId(invoice.getId()).stream().map(invoiceItemMapper::toInvoiceItemDto).collect(Collectors.toList()));
     }
+
     @Transactional
-    public SaleInvoiceDto updateInvoiceItems(Integer id, List<InvoiceItemDto> invoiceItemDtos) {
+    public SaleInvoiceDto returnInvoiceItems(Integer id, List<InvoiceItemDto> invoiceItemDtos) {
+
         List<Integer> invoiceItemIds = invoiceItemDtos.stream()
                 .map(InvoiceItemDto::id)
                 .distinct()
                 .toList();
-
-        Map<Integer, InvoiceItem> invoiceItemMap = invoiceItemRepository.findAllById(invoiceItemIds).stream()
-                .collect(Collectors.toMap(InvoiceItem::getId, Function.identity()));
-
-
         List<Integer> productIds = invoiceItemDtos.stream()
                 .map(InvoiceItemDto::productId)
                 .distinct()
                 .collect(Collectors.toList());
 
+
+        Map<Integer, InvoiceItem> invoiceItemMap = invoiceItemRepository.findAllById(invoiceItemIds).stream()
+                .collect(Collectors.toMap(InvoiceItem::getId, Function.identity()));
+
         Map<Integer, ProductStockDto> productMap = productRepository.fetchProductStockAndCostByIds(productIds).stream()
                 .collect(Collectors.toMap(ProductStockDto::id, Function.identity()));
+        Invoice invoice = invoiceRepository.findById(invoiceItemDtos.getFirst().invoiceId())
+                .orElseThrow(()-> customExceptionHandler
+                        .handleNotFoundException("Invoice with id " + invoiceItemDtos.getFirst().invoiceId() + " not found"));
 
         List<InvoiceItem> invoiceItems = new ArrayList<>();
-        Invoice invoice = invoiceRepository.findById(invoiceItemDtos.getFirst().invoiceId()).orElseThrow(()-> customExceptionHandler.handleNotFoundException("Invoice with id " + invoiceItemDtos.get(0).invoiceId() + " not found"));
+
+        for (InvoiceItemDto dto : invoiceItemDtos){
+            InvoiceItem invoiceItem = invoiceItemMap.get(dto.id());
+            if(invoiceItem == null || invoiceItem.getQuantity() < dto.quantity()){
+                throw customExceptionHandler.handleBadRequestException("Invoice item with id " + dto.id() + " not found or quantity is invalid");
+            }
+        }
 
         for (InvoiceItemDto dto : invoiceItemDtos) {
             ProductStockDto product = productMap.get(dto.productId());
             InvoiceItem invoiceItem = invoiceItemMap.get(dto.id());
-
-            validateInvoiceItem( dto, product.stock(), invoiceItem.getQuantity());
-
-            System.out.println("invoiceItem.getQuantity() = " + invoiceItem.getCostPrice());
-            if (product == null || !product.isActive()) {
-                throw new RuntimeException("Invalid product: " + dto.productId());
+            if(Objects.equals(invoiceItem.getQuantity(), dto.quantity())){
+                System.out.println("Invoice item with id " + dto.id() + " has no return quantity");
+                continue;
             }
+            System.out.println("Invoice item with id " + dto.id() + " has return quantity");
 
+            validateInvoiceItem( dto, product.stock(), invoiceItem.getQuantity(), "return");
 
+            // Calculate the discounted price
             if (invoiceItem.getDiscount() == 0 ) {
                 invoiceItem.setAmount(invoiceItem.getUnitPrice() * dto.quantity());
-                System.out.println("invoiceItem.getAmount() ============ " + invoiceItem.getAmount()+"_________"+dto.quantity());
             }else{
-                // Calculate the discounted price
                 invoiceItem.setAmount((invoiceItem.getUnitPrice() * dto.quantity()) * (100 - invoiceItem.discount) / 100);
             }
-            stockService.updateStock(product.id(), dto.quantity());
 
+            // Update stock in-memory
+            stockService.updateStockForInvoiceReturn(product.id(), invoiceItem.getId(),invoiceItem.getQuantity()-dto.quantity() );
 
+            // Update invoice item
             invoiceItem.setQuantity(dto.quantity());
 
             invoiceItems.add(invoiceItem);
 
-            // Update stock in-memory
         }
 
         // Save all invoice items in one go
-        List<InvoiceItem> savedInvoiceItems = invoiceItemRepository.saveAll(invoiceItems);
-
-        // Save updated products and invoice
-        productRepository.saveAll(productMap.values().stream().map(productMapper::toProduct).collect(Collectors.toList()));
+        invoiceItemRepository.saveAll(invoiceItems);
         invoice.setTotal( invoiceItemRepository.getTotalByInvoice(invoice.getId()));
         invoiceRepository.save(invoice);
-        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), savedInvoiceItems.stream().map(invoiceItemMapper::toInvoiceItemDto).collect(Collectors.toList()));
+        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), invoiceItemRepository.findAllByInvoiceId(invoice.getId()).stream().map(invoiceItemMapper::toInvoiceItemDto).collect(Collectors.toList()));
     }
 
     @Transactional
@@ -260,6 +282,7 @@ public class InvoiceItemService {
 
         invoiceItem = invoiceItemRepository.save(invoiceItem);
 
+        //have to implement stock return logic
         updateProductAndInvoice(product, invoice, oldInvoiceItem.getQuantity() - invoiceItem.getQuantity());
 
         return invoiceItemMapper.toInvoiceItemDto(invoiceItem);
@@ -288,10 +311,10 @@ public class InvoiceItemService {
         productRepository.save(product);
         invoice.setTotal(invoiceItemRepository.getTotalByInvoice(invoice.getId()));
         invoiceRepository.save(invoice);
-        stockService.updateStock(product.getId(),quantity);
+        stockService.updateStockForInvoice(product.getId(),quantity);
     }
 
-    private void validateInvoiceItem(InvoiceItemDto invoiceItemDto, Double availableQty, Double invoiceItemQuantity) {
+    private void validateInvoiceItem(InvoiceItemDto invoiceItemDto, Double availableQty, Double invoiceItemQuantity, String type) {
         List<String> errors = new ArrayList<>();
         if (invoiceItemDto.quantity() > availableQty) {
             errors.add("Quantity must be less than or equal to product quantity");
@@ -312,7 +335,11 @@ public class InvoiceItemService {
             errors.add("Amount must be greater than 0");
         }
         if (invoiceItemDto.quantity() <= 0) {
-            errors.add("Quantity must be greater than 0");
+            if(type.equals("return") || invoiceItemDto.quantity() == 0) {
+                return;
+            }else {
+                errors.add("Quantity must be greater than 0");
+            }
         }
         if (invoiceItemDto.discount() < 0 || invoiceItemDto.discount() > 100 ) {
             errors.add("Discount must be between 0 and 100");

@@ -10,15 +10,13 @@ public record InvoiceItemDto(
         Integer invoiceId,
         @NotNull(message = "productId cannot be null")
         Integer productId,
-        @NotNull(message = "quantity cannot be null")
-        @Positive
+        @PositiveOrZero(message = "quantity cannot be negative")
         Double quantity,
 
         @NotNull(message = "unitPrice cannot be null")
         @PositiveOrZero(message = "unitPrice cannot be negative")
         Double unitPrice,
         @PositiveOrZero(message = "discount cannot be negative")
-
         Integer discount,
 
 

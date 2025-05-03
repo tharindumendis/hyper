@@ -62,11 +62,11 @@ public class SaleInvoiceService {
         return invoiceItemService.createInvoiceItems(saleInvoiceDto);
     }
     @Transactional
-    public SaleInvoiceDto updateSale(Integer id, SaleInvoiceDto saleInvoiceDto) {
+    public SaleInvoiceDto returnSale(Integer id, SaleInvoiceDto saleInvoiceDto) {
          if(!Objects.equals(saleInvoiceDto.items().getFirst().invoiceId(), saleInvoiceDto.invoice().id())){
             throw  customExceptionHandler.handleBadRequestException(" Invoice id does not match");
          }
-        return invoiceItemService.updateInvoiceItems(id, saleInvoiceDto.items());
+        return invoiceItemService.returnInvoiceItems(id, saleInvoiceDto.items());
     }
 
 

@@ -13,7 +13,9 @@ public class GRNMapper {
         return new GRNDto(
                 grn.getId(),
                 grn.getSupplier().getId(),
-                grn.getTotal()
+                grn.getTotal(),
+                grn.getCreatedAt(),
+                grn.getUpdatedAt()
         );
     }
     public GRN toGRN(GRNDto grnDto) {
@@ -22,17 +24,23 @@ public class GRNMapper {
         grn.setId(grnDto.id());
         grn.setSupplier(supplier);
         grn.setTotal(grnDto.total());
+        grn.setCreatedAt(grnDto.createdAt());
+        grn.setUpdatedAt(grnDto.updatedAt());
         return grn;
     }
     public GRN toGRN(GRNDto grnDto, GRN grn) {
         supplier.setId(grnDto.supplierId());
         grn.setSupplier(supplier);
         grn.setTotal(grnDto.total());
+        grn.setCreatedAt(grnDto.createdAt());
+        grn.setUpdatedAt(grnDto.updatedAt());
         return grn;
     }
     public GRN toGRN(GRNDto grnDto, GRN grn, Supplier supplier) {
         grn.setSupplier(supplier);
         grn.setTotal(grnDto.total());
+        grn.setCreatedAt(grnDto.createdAt());
+        grn.setUpdatedAt(grnDto.updatedAt());
         return grn;
     }
 
