@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,7 @@ public class GRNItemService {
 
         return grnItemMapper.toGRNItemDto(grnItem);
     }
-    public PurchaseDto createStockGRN(List<GRNItemDto> sGRNDto) {
+    public PurchaseDto createGRNItems(List<GRNItemDto> sGRNDto) {
         List<Integer> productIds = sGRNDto.stream()
                 .map(GRNItemDto::productId)
                 .distinct()
@@ -108,8 +109,6 @@ public class GRNItemService {
 
             GRNItemItems.add(item);
 
-
-
             stock.setProduct(product);
             stock.setQuantity(dto.quantity());
             stock.setGrnItem(item);
@@ -120,22 +119,78 @@ public class GRNItemService {
 
         }
 
-        List<GRNItem> savedGRNItemItems = grnItemRepository.saveAll(GRNItemItems);
-
+        grnItemRepository.saveAll(GRNItemItems);
         stockService.createStocks(stocks);
 
-        productRepository.saveAll(productMap.values());
         grn.setTotal(grnItemRepository.getTotalByGRN(grn.getId()));
         grnRepository.save(grn);
 
 
-        return new PurchaseDto(grnMapper.toGRNDto(grn), savedGRNItemItems.stream().map(grnItemMapper::toGRNItemDto).collect(Collectors.toList()));
+        return new PurchaseDto(grnMapper.toGRNDto(grn), grnItemRepository.findAllByGrn_Id(grn.getId()).stream().map(grnItemMapper::toGRNItemDto).collect(Collectors.toList()));
 
 
     }
+    @Transactional
+    public PurchaseDto updateGRNItems(List<GRNItemDto> sGRNDto) {
+        GRN grn = grnRepository.findById(sGRNDto.getFirst().GRNId())
+                .orElseThrow(()-> customExceptionHandler
+                        .handleNotFoundException("GRN with id " + sGRNDto.getFirst().GRNId() + " not found"));
+        List<Integer> productIds = sGRNDto.stream().map(GRNItemDto::productId)
+                .distinct().toList();
+        List<Integer> grnItemIds = sGRNDto.stream().map(GRNItemDto::id)
+                .distinct().toList();
+        Map<Integer, Product> productMap = productRepository.findAllById(productIds).stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+        Map<Integer, GRNItem> grnMap = grnItemRepository.findAllById(grnItemIds).stream()
+                .collect(Collectors.toMap(GRNItem::getId, Function.identity()));
+
+        List<Stock> stocks = new ArrayList<>();
+
+        for (GRNItemDto dto : sGRNDto) {
+            Integer id = dto.id();
+            if (id == null) {
+                throw customExceptionHandler.handleBadRequestException("GrnItem id must not be null for update GrnItem");
+            }
+            Product product = productMap.get(dto.productId());
+            GRNItem oldGRNItem = grnMap.get(dto.id());
+            if(product == null) {
+                throw customExceptionHandler.handleNotFoundException("Product with id " + dto.productId() + " not found");
+            }
+            if(oldGRNItem == null) {
+                throw customExceptionHandler.handleNotFoundException("GRN with id " + dto.GRNId() + " not found");
+            }
+
+            if(Objects.equals(oldGRNItem.getQuantity(), dto.quantity()) && Objects.equals(oldGRNItem.getUnitCost(), dto.unitCost())) {
+                continue;
+            }
+            Stock stock = stockService.findByGrnItemId(oldGRNItem.getId());
+            Double oldQty = oldGRNItem.getQuantity();
+            Double newQty = dto.quantity();
+            if (!Objects.equals(newQty, oldQty)) {
+
+                stock.setQuantity(newQty);
+
+                //update product quantity
+            }
+
+            GRNItem grnItem = grnItemMapper.toGRNItem(dto,product, grn);
+            grnItem.setId(id);
+            grnItem.setQuantity(newQty);
+            grnItem.setUnitCost(dto.unitCost());
+            saveGRNAfterDiscount(grnItem);
+            stock.setUnitCost(dto.unitCost());
+            stocks.add(stock);
+            //update GRN total
+
+        }
+        stockService.updateAllStock(stocks);
+        grn.setTotal(grnItemRepository.getTotalByGRN(grn.getId()));
+        GRN newGRN = grnRepository.save(grn);
+        return new PurchaseDto(grnMapper.toGRNDto(newGRN), grnItemRepository.findAllByGrn_Id(grn.getId()).stream().map(grnItemMapper::toGRNItemDto).collect(Collectors.toList()));
+    }
 
     @Transactional
-    public GRNItemDto updateGRN(Integer id, GRNItemDto grnItemDto) {
+    public GRNItemDto ReturnGRN(Integer id, GRNItemDto grnItemDto) {
         validateGrn(grnItemDto);
         GRN grn = grnRepository
                 .findById(grnItemDto.GRNId())
@@ -147,19 +202,26 @@ public class GRNItemService {
         GRNItem oldGRNItem = grnItemRepository.findById(id)
                 .orElseThrow(()->customExceptionHandler
                         .handleNotFoundException("Old grnItem with id " + id + " not found"));
-        Double oldQty = oldGRNItem.getQuantity();
 
+        Double oldQty = oldGRNItem.getQuantity();
+        Double newQty = grnItemDto.quantity();
+        if (!Objects.equals(newQty, oldQty)) {
+            Stock stock = stockService.findByGrnItemId(oldGRNItem.getId());
+            stock.setQuantity(newQty);
+            stock.setUnitCost(grnItemDto.unitCost());
+            stockService.updateStock(stock);
+            //update product quantity
+        }
+
+        oldGRNItem.setUnitCost(grnItemDto.unitCost());
         GRNItem grnItem = grnItemMapper.toGRNItem(grnItemDto,product, grn);
         grnItem.setId(id);
-
+        grnItem.setQuantity(newQty);
         grnItem = saveGRNAfterDiscount(grnItem);
 
-        //update product quantity
-        productRepository.save(product);
         //update GRN total
-        grn.setTotal(grnItemRepository.getTotalByGRN(grnItem.getGrn().getId()));
+        grn.setTotal(grnItemRepository.getTotalByGRN(grn.getId()));
         grnRepository.save(grn);
-
         return grnItemMapper.toGRNItemDto(grnItem);
     }
 

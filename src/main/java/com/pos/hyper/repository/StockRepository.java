@@ -9,4 +9,5 @@ public interface StockRepository extends JpaRepository<Stock, Integer> {
     List<Stock> findByProductIdOrderByReceivedDateAsc(Integer productId);
      List<Stock> findByProductIdAndQuantityGreaterThanOrderByReceivedDateAsc(Integer productId, Integer quantity);
 
+    Stock findByGrnItem_Id(Integer grnItemId);
 }

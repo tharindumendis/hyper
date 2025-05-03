@@ -3,8 +3,6 @@ package com.pos.hyper.model.Stock;
 import com.pos.hyper.DTO.StockDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.invoiceStockConsumption.InvoiceStockConsumption;
-import com.pos.hyper.model.invoice_item.InvoiceItem;
-import com.pos.hyper.model.product.ProductStockDto;
 import com.pos.hyper.repository.InvoiceStockConsumptionRepository;
 import com.pos.hyper.repository.StockRepository;
 import org.springframework.stereotype.Service;
@@ -33,6 +31,9 @@ public class StockService {
         Stock stock = stockRepository.findById(id)
                 .orElseThrow(() -> customExceptionHandler.handleNotFoundException("Stock with id " + id + " not found"));
         return stockMapper.toDto(stock);
+    }
+    public Stock findByGrnItemId(Integer grnItemId) {
+        return stockRepository.findByGrnItem_Id(grnItemId);
     }
     public StockDto createStock(StockDto stockDto) {
         Stock stock = stockMapper.toStock(stockDto);
@@ -168,5 +169,12 @@ public class StockService {
 
     public List<Stock> createStocks(List<Stock> stocks) {
         return stockRepository.saveAll(stocks);
+    }
+
+    public void updateStock(Stock stock) {
+        stockRepository.save(stock);
+    }
+    public void updateAllStock(List<Stock> stocks) {
+        stockRepository.saveAll(stocks);
     }
 }

@@ -22,7 +22,6 @@ public class GRNItemController {
         this.customExceptionHandler = customExceptionHandler;
     }
 
-
     @GetMapping("")
     public List<GRNItemDto> getAllGRNItems() {
         return grnItemService.getAllGRNItem();
@@ -36,13 +35,15 @@ public class GRNItemController {
         return grnItemService.createGRNItem(grnItemDto);
     }
     @PutMapping("/{id}")
-    public GRNItemDto updateGRNItem(@PathVariable Integer id, @Valid @RequestBody GRNItemDto grnItemDto) {
-        return grnItemService.updateGRN(id, grnItemDto);
+    public GRNItemDto returnGRNItem(@PathVariable Integer id, @Valid @RequestBody GRNItemDto grnItemDto) {
+        return grnItemService.ReturnGRN(id, grnItemDto);
     }
     @DeleteMapping("/{id}")
     public void deleteGRNItem(@PathVariable Integer id) {
         grnItemService.deleteGRNItem(id);
     }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
         return customExceptionHandler.handleMethodArgumentNotValid(exp);

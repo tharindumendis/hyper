@@ -8,6 +8,7 @@ import com.pos.hyper.model.grn.GRN;
 import com.pos.hyper.model.product.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,7 +43,7 @@ public class GRNItem {
     private List<Stock> stock;
 
 
-    @Positive
+    @PositiveOrZero
     Double quantity;
     Double unitCost;
     Integer discount = null;// in parentage value
