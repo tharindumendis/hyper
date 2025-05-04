@@ -68,7 +68,7 @@ public class ProductService {
         return uploadImage(file, product);
     }
 
-    private ProductDto uploadImage(MultipartFile file, Product product) {
+    public ProductDto uploadImage(MultipartFile file, Product product) {
         product.setImage(product.getId()+".jpg");
         try {
 
@@ -83,16 +83,15 @@ public class ProductService {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("Image uploaded successfully.");
 
-            String imageUrl = "api/image/" + product.getId();
+            String imageUrl = "api/image/product/" + product.getId();
             product.setImage(imageUrl);
             productRepository.save(product);
             ;
         } catch (IOException e) {
             System.err.println("Error uploading image: " + product.getId() + ".jpg");
             e.printStackTrace();
+            throw new RuntimeException("Error uploading image: " + product.getId() + ".jpg");
         }
-
-
         return productMapper.toProductDto(product);
     }
 

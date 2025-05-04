@@ -89,34 +89,28 @@ public class GRNItemService {
         for (GRNItemDto dto : sGRNDto) {
             Product product = productMap.get(dto.productId());
 
-
             GRNItem item = new GRNItem();
             Stock stock = new Stock();
-            if (dto.discount() == 0 ) {
-                item.setAmount(dto.unitCost() * dto.quantity());
-            }else{
-                // Calculate the discounted price
-                item.setAmount((dto.unitCost() * dto.quantity()) * (100 - dto.discount()) / 100);
-            }
 
             validateGrn(dto);
 
             item.setProduct(product);
             item.setQuantity(dto.quantity());
             item.setGrn(grn);
-            item.setDiscount(dto.discount());
+            item.setDiscount(product.getDiscount());
             item.setUnitCost(dto.unitCost());
-
-            GRNItemItems.add(item);
-
+            if (item.getDiscount() == 0) {
+                item.setAmount(dto.unitCost() * dto.quantity());
+            }else{
+                item.setAmount((dto.unitCost() * dto.quantity()) * (100 - dto.discount()) / 100);
+            }
             stock.setProduct(product);
             stock.setQuantity(dto.quantity());
             stock.setGrnItem(item);
             stock.setUnitCost(dto.unitCost());
 
+            GRNItemItems.add(item);
             stocks.add(stock);
-
-
         }
 
         grnItemRepository.saveAll(GRNItemItems);
@@ -169,7 +163,6 @@ public class GRNItemService {
             if (!Objects.equals(newQty, oldQty)) {
 
                 stock.setQuantity(newQty);
-
                 //update product quantity
             }
 
