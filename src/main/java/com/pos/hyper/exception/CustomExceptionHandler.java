@@ -23,11 +23,13 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    public ResponseStatusException handleNotFoundException(String message) {
+    public ResponseStatusException  handleNotFoundException(String message) {
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
         return new ResponseStatusException(HttpStatus.NOT_FOUND, message);
 
     }
     public ResponseStatusException handleBadRequestException(String message) {
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
         return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
 
     }
@@ -35,7 +37,6 @@ public class CustomExceptionHandler {
     public ResponseStatusException handleBadRequestExceptionSet(List<String> errors) {
         return new ResponseStatusException(HttpStatus.BAD_REQUEST, String.join("; ", errors));
     }
-
 
 
 }
