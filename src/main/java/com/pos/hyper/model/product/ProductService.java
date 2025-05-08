@@ -126,7 +126,11 @@ public class ProductService {
     }
 
     public ResponseEntity<?> getProductStock() {
-        return ResponseEntity.ok(productRepository.fetchProductStockAndCost());
+        Object productStock = productRepository.fetchProductStockAndCost();
+        if(productStock == null){
+            return customExceptionHandler.notFoundException("No product found");
+        }
+        return ResponseEntity.ok(productStock);
 
     }
 
@@ -152,6 +156,10 @@ public class ProductService {
 
 
     public ResponseEntity<?> getProductStockById(Integer id) {
-        return ResponseEntity.ok(productRepository.fetchProductStockAndCostById(id));
+        Object productStock = productRepository.fetchProductStockAndCostById(id);
+        if(productStock == null){
+            return customExceptionHandler.notFoundException("Product with id " + id + " not found");
+        }
+        return ResponseEntity.ok(productStock);
     }
 }

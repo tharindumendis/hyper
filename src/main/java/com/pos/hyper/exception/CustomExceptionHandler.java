@@ -45,15 +45,15 @@ public class CustomExceptionHandler {
 //                .body(new HashMap<String, String>() {{ put("error", message); }});
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Collections.singletonMap("error", message));
+                .body(Collections.singletonMap("message", message));
     }
     public ResponseEntity<?> badRequestException(String message) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new HashMap<String, String>() {{ put("error", message); }});
+                .body(new HashMap<String, String>() {{ put("message", message); }});
     }
     public ResponseEntity<?> badRequestExceptionSet(List<String> errors) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new HashMap<String, String>() {{ put("error", String.join("; ", errors)); }});
+                .body(new HashMap<String, String>() {{ put("message", String.join("; ", errors)); }});
     }
 
 }

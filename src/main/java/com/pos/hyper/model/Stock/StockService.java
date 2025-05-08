@@ -167,8 +167,8 @@ public class StockService {
     }
 
 
-    public List<Stock> createStocks(List<Stock> stocks) {
-        return stockRepository.saveAll(stocks);
+    public void createStocks(List<Stock> stocks) {
+        stockRepository.saveAll(stocks);
     }
 
     public void updateStock(Stock stock) {
