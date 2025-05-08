@@ -23,25 +23,26 @@ public class GrnController {
     }
 
     @GetMapping("")
-    public List<GRNDto> getAllGRNs() {
+    public ResponseEntity<?> getAllGRNs() {
         return grnService.getAllGRNs();
     }
     @GetMapping("/{id}")
-    public GRNDto getGRNById(@PathVariable Integer id) {
+    public ResponseEntity<?> getGRNById(@PathVariable Integer id) {
         return grnService.getGRNById(id);
     }
     @PostMapping(path = "",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public GRNDto createGRN(@Valid @RequestBody GRNDto grnDto) {
+    public ResponseEntity<?> createGRN(@Valid @RequestBody GRNDto grnDto) {
         return grnService.createGRN(grnDto);
     }
     @PutMapping("/{id}")
-    public GRNDto updateGRN(@PathVariable Integer id, @Valid @RequestBody GRNDto grnDto) {
+    public ResponseEntity<?> updateGRN(@PathVariable Integer id, @Valid @RequestBody GRNDto grnDto) {
         return grnService.updateGRN(id, grnDto);
     }
     @DeleteMapping("/{id}")
-    public void deleteGRN(@PathVariable Integer id) {
-        grnService.deleteGRN(id);
+    public ResponseEntity<?> deleteGRN(@PathVariable Integer id) {
+        return grnService.deleteGRN(id);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
         return customExceptionHandler.handleMethodArgumentNotValid(exp);

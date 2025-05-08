@@ -3,6 +3,7 @@ package com.pos.hyper.model.customer;
 import com.pos.hyper.DTO.CustomerDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.repository.CustomerRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,42 +24,47 @@ public class CustomerService {
         this.customExceptionHandler = customExceptionHandler;
     }
 
-    public List<CustomerDto> getAllCustomers() {
+    public ResponseEntity<?> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
-        return customers.stream().map(customerMapper::toCustomerDto).toList();
+        return ResponseEntity.ok(customers.stream().map(customerMapper::toCustomerDto).toList());
     }
-    public CustomerDto getCustomerById(Integer id) {
-        Customer customer = customerRepository
-                .findById(id).orElseThrow(() -> customExceptionHandler
-                        .handleNotFoundException("Customer with id " + id + " not found"));
-        return customerMapper.toCustomerDto(customer);
+    public ResponseEntity<?> getCustomerById(Integer id) {
+        Customer customer = customerRepository.findById(id).orElse(null);
+        if (customer == null) {
+            return customExceptionHandler.notFoundException("Customer with id " + id + " not found");
+        }
+        return ResponseEntity.ok(customerMapper.toCustomerDto(customer));
     }
 
-    public CustomerDto createCustomer(CustomerDto customerDto) {
-        validateCustomer(customerDto);
+    public ResponseEntity<?> createCustomer(CustomerDto customerDto) {
+        ResponseEntity<?> error = validateCustomer(customerDto);
+        if( error != null) {
+            return error;
+        }
         Customer customer = customerMapper.toCustomer(customerDto);
         customer.setId(null);
-        if(customer.getIsActive()==null){
+        if(customer.getIsActive()==null) {
             customer.setIsActive(Boolean.TRUE);
         }
-        customer = customerRepository.save(customer);
-        return customerMapper.toCustomerDto(customer);
+        return ResponseEntity.ok(customerMapper.toCustomerDto(customerRepository.save(customer)));
     }
     @Transactional
-    public CustomerDto updateCustomer(Integer id, CustomerDto customerDto) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(()-> customExceptionHandler
-                        .handleNotFoundException("Customer with id " + id + " not found"));
+    public ResponseEntity<?> updateCustomer(Integer id, CustomerDto customerDto) {
+        Customer customer = customerRepository.findById(id).orElse(null);
+        if(customer == null) {
+            customExceptionHandler.notFoundException("Customer with id " + id + " not found");
+        }
         customer = customerMapper.toCustomer(customerDto, customer);
         customer.setId(id);
         customer = customerRepository.save(customer);
-        return customerMapper.toCustomerDto(customer);
+        return ResponseEntity.ok(customerMapper.toCustomerDto(customer));
     }
+
     public void deleteCustomer(Integer id) {
         customerRepository.deleteById(id);
     }
 
-    private void validateCustomer(CustomerDto customerDto) {
+    private ResponseEntity<?> validateCustomer(CustomerDto customerDto) {
         List<String> errors = new ArrayList<>();
         if(customerRepository.existsByEmail(customerDto.email())) {
             errors.add("Email already exists");
@@ -67,8 +73,9 @@ public class CustomerService {
             errors.add("Phone already exists");
         }
         if(!errors.isEmpty()) {
-            throw customExceptionHandler.handleBadRequestExceptionSet(errors);
+            return customExceptionHandler.badRequestExceptionSet(errors);
         }
+        return null;
     }
 
 }

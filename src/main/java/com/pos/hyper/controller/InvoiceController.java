@@ -23,25 +23,25 @@ public class InvoiceController {
     }
 
     @GetMapping("")
-    public List<InvoiceDto> getAllInvoices() {
-        return invoiceService.getAllInvoices();
+    public ResponseEntity<?> getAllInvoices() {
+        return ResponseEntity.ok(invoiceService.getAllInvoices());
     }
     @GetMapping("/{id}")
-    public InvoiceDto getInvoiceById(@PathVariable Integer id) {
+    public ResponseEntity<?> getInvoiceById(@PathVariable Integer id) {
+
         return invoiceService.getInvoiceById(id);
     }
-
     @PostMapping("")
-    public InvoiceDto createInvoice(@RequestBody InvoiceDto invoiceDto) {
+    public ResponseEntity<?> createInvoice(@RequestBody InvoiceDto invoiceDto) {
         return invoiceService.createInvoice(invoiceDto);
     }
     @PutMapping("/{id}")
-    public InvoiceDto updateInvoice(@PathVariable Integer id, @RequestBody InvoiceDto invoiceDto) {
+    public ResponseEntity<?> updateInvoice(@PathVariable Integer id, @RequestBody InvoiceDto invoiceDto) {
         return invoiceService.updateInvoice(id, invoiceDto);
     }
     @DeleteMapping("/{id}")
-    public void deleteInvoice(@PathVariable Integer id) {
-        invoiceService.deleteInvoice(id);
+    public ResponseEntity<?> deleteInvoice(@PathVariable Integer id) {
+        return invoiceService.deleteInvoice(id);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

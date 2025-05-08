@@ -4,6 +4,7 @@ import com.pos.hyper.DTO.CategoryDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.exception.NotFoundException;
 import com.pos.hyper.repository.CategoryRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +33,10 @@ public class CategoryService {
     }
     public ResponseEntity<?> getCategoryById(Integer id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Category with id " + id + " not found"));
-//                .orElseThrow(() -> customExceptionHandler
-//                        .handleNotFoundException("Category with id " + id + " not found"));
+                .orElse(null);
+        if (category == null) {
+            return customExceptionHandler.notFoundException("Category with id " + id + " not found");
+        }
         return ResponseEntity.ok(categoryMapper.toCategoryDto(category));
     }
     @Transactional
