@@ -35,40 +35,48 @@ public class ProductService {
         this.productMapper = productMapper;
         this.customExceptionHandler = customExceptionHandler;
     }
-    public List<ProductDto> getAllProducts(){
+    public ResponseEntity<?> getAllProducts(){
         List<Product> products = productRepository.findAll();
-        return products.stream().map(productMapper::toProductDto).collect(Collectors.toList());
+        return ResponseEntity.ok(products.stream().map(productMapper::toProductDto).collect(Collectors.toList()));
     }
-    public ProductDto getProductById(Integer id){
-        Product product = productRepository.findById(id)
-                .orElseThrow(()-> customExceptionHandler
-                        .handleNotFoundException("Product with id " + id + " not found"));
-        return productMapper.toProductDto(product);
+    public ResponseEntity<?> getProductById(Integer id){
+        Product product = productRepository.findById(id).orElse(null);
+        if(product == null){
+            return customExceptionHandler.notFoundException("Product with id " + id + " not found");
+        }
+        return ResponseEntity.ok(productMapper.toProductDto(product));
     }
-    public ProductDto createProduct(ProductDto productDto, MultipartFile file) {
-        validateProduct(productDto,"create");
+    public ResponseEntity<?> createProduct(ProductDto productDto, MultipartFile file) {
+        ResponseEntity<?> rs =validateProduct(productDto,"create");
+        if(rs != null){
+            return rs;
+        }
         Product product = productMapper.toProduct(productDto);
         product.setImage(null);
         product = productRepository.save(product);
         if(file != null){
-            return uploadImage(file, product);
+            return ResponseEntity.ok(uploadImage(file, product));
         }
-        return productMapper.toProductDto(product);
+        return ResponseEntity.ok(productMapper.toProductDto(product));
 
     }
 
-    public ProductDto updateProduct(ProductDto productDto, MultipartFile file, Integer id) {
-        validateProduct(productDto,"update");
-        Product product = productRepository.findById(id)
-                .orElseThrow(()-> customExceptionHandler
-                        .handleNotFoundException("Product with id " + id + " not found"));
+    public ResponseEntity<?> updateProduct(ProductDto productDto, MultipartFile file, Integer id) {
+        ResponseEntity<?> rs = validateProduct(productDto,"update");
+        if(rs != null){
+            return rs;
+        }
+        Product product = productRepository.findById(id).orElse(null);
+        if(product == null){
+            return customExceptionHandler.notFoundException("Product with id " + id + " not found");
+        }
         product = productMapper.toProduct(productDto, product);
         product.setId(id);
 
-        return uploadImage(file, product);
+        return ResponseEntity.ok(uploadImage(file, product));
     }
 
-    public ProductDto uploadImage(MultipartFile file, Product product) {
+    public ResponseEntity<?> uploadImage(MultipartFile file, Product product) {
         product.setImage(product.getId()+".jpg");
         try {
 
@@ -92,32 +100,37 @@ public class ProductService {
             e.printStackTrace();
             throw new RuntimeException("Error uploading image: " + product.getId() + ".jpg");
         }
-        return productMapper.toProductDto(product);
+        return ResponseEntity.ok(productMapper.toProductDto(product));
     }
 
 
     @Transactional
-    public ProductDto updateProduct(Integer id, ProductDto productDto) {
-        validateProduct(productDto,"update");
-        Product product = productRepository.findById(id)
-                .orElseThrow(()-> customExceptionHandler
-                        .handleNotFoundException("Product with id " + id + " not found"));
+    public ResponseEntity<?> updateProduct(Integer id, ProductDto productDto) {
+        ResponseEntity<?> rs = validateProduct(productDto,"update");
+        if(rs != null){
+            return rs;
+        }
+        Product product = productRepository.findById(id).orElse(null);
+        if(product == null){
+            return customExceptionHandler.notFoundException("Product with id " + id + " not found");
+        }
         product = productMapper.toProduct(productDto, product);
         product.setId(id);
         product = productRepository.save(product);
-        return productMapper.toProductDto(product);
+        return ResponseEntity.ok(productMapper.toProductDto(product));
     }
 
-    public void deleteProduct(Integer id) {
+    public ResponseEntity<?> deleteProduct(Integer id) {
         productRepository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 
-    public List<ProductStockDto> getProductStock() {
-        return productRepository.fetchProductStockAndCost();
+    public ResponseEntity<?> getProductStock() {
+        return ResponseEntity.ok(productRepository.fetchProductStockAndCost());
 
     }
 
-    private void validateProduct(ProductDto productDto,String method) {
+    private ResponseEntity<?> validateProduct(ProductDto productDto,String method) {
         List<String> errors = new ArrayList<>();
         if (!method.equals("update")){
             if (productRepository.existsByBarcode(productDto.barcode())) {
@@ -132,12 +145,13 @@ public class ProductService {
             errors.add("Category does not exist");
         }
         if (!errors.isEmpty()) {
-            throw customExceptionHandler.handleBadRequestExceptionSet(errors);
+            return customExceptionHandler.badRequestExceptionSet(errors);
         }
+        return null;
     }
 
 
-    public ProductStockDto getProductStockById(Integer id) {
-        return productRepository.fetchProductStockAndCostById(id);
+    public ResponseEntity<?> getProductStockById(Integer id) {
+        return ResponseEntity.ok(productRepository.fetchProductStockAndCostById(id));
     }
 }

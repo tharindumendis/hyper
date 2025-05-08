@@ -24,25 +24,27 @@ public class InvoiceItemController {
     }
 
     @GetMapping("")
-    public List<InvoiceItemDto> getAllInvoiceItems() {
+    public ResponseEntity<?> getAllInvoiceItems() {
         return invoiceItemService.getAllInvoiceItems();
     }
     @GetMapping("/{id}")
-    public InvoiceItemDto getInvoiceItemById(@PathVariable Integer id) {
+    public ResponseEntity<?> getInvoiceItemById(@PathVariable Integer id) {
         return invoiceItemService.getInvoiceItemById(id);
     }
     @PostMapping("")
-    public InvoiceItemDto createInvoiceItem(@Valid @RequestBody InvoiceItemDto invoiceItemDto) {
+    public ResponseEntity<?> createInvoiceItem(@Valid @RequestBody InvoiceItemDto invoiceItemDto) {
         return invoiceItemService.createInvoiceItem(invoiceItemDto);
     }
     @PutMapping("/{id}")
-    public InvoiceItemDto updateInvoiceItem(@PathVariable Integer id, @Valid @RequestBody InvoiceItemDto invoiceItemDto) {
-        return invoiceItemService.updateInvoiceItem(id, invoiceItemDto);
+    public ResponseEntity<?> updateInvoiceItem(@PathVariable Integer id, @Valid @RequestBody InvoiceItemDto invoiceItemDto) {
+        return ResponseEntity.ok(invoiceItemService.updateInvoiceItem(id, invoiceItemDto));
     }
     @DeleteMapping("/{id}")
-    public void deleteInvoiceItem(@PathVariable Integer id) {
-        invoiceItemService.deleteInvoiceItem(id);
+    public ResponseEntity<?> deleteInvoiceItem(@PathVariable Integer id) {
+        return invoiceItemService.deleteInvoiceItem(id);
     }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValid(MethodArgumentNotValidException exp) {
 

@@ -23,19 +23,19 @@ public class SupplierController {
     }
 
     @GetMapping("")
-    public List<SupplierDto> getAllSuppliers() {
+    public ResponseEntity<?> getAllSuppliers() {
         return supplierService.getAllSuppliers();
     }
     @GetMapping("/{id}")
-    public SupplierDto getSupplierById(@PathVariable Integer id) {
+    public ResponseEntity<?> getSupplierById(@PathVariable Integer id) {
         return supplierService.getSupplierById(id);
     }
     @PostMapping("")
-    public SupplierDto createSupplier(@Valid @RequestBody SupplierDto supplierDto) {
+    public ResponseEntity<?> createSupplier(@Valid @RequestBody SupplierDto supplierDto) {
         return supplierService.createSupplier(supplierDto);
     }
     @PutMapping("/{id}")
-    public SupplierDto updateSupplier(@PathVariable Integer id, @Valid @RequestBody SupplierDto supplierDto) {
+    public ResponseEntity<?> updateSupplier(@PathVariable Integer id, @Valid @RequestBody SupplierDto supplierDto) {
         return supplierService.updateSupplier(id, supplierDto);
     }
     @DeleteMapping("/{id}")

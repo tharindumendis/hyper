@@ -24,30 +24,28 @@ public class CustomerController {
 
     }
 
-
     @GetMapping("")
-    List<CustomerDto> findAll(){
+    public ResponseEntity<?> findAll(){
         return customerService.getAllCustomers();
     }
 
     @GetMapping("/{id}")
-    CustomerDto findById(@PathVariable Integer id) {
+    public ResponseEntity<?> findById(@PathVariable Integer id) {
         return customerService.getCustomerById(id);
     }
 
     @PostMapping("")
-    CustomerDto save(@Valid @RequestBody CustomerDto customerDto) {
-
+    public ResponseEntity<?> save(@Valid @RequestBody CustomerDto customerDto) {
         return customerService.createCustomer(customerDto);
     }
 
     @PutMapping("/{id}")
-    CustomerDto update(@Valid @RequestBody CustomerDto customerDto, @PathVariable Integer id) {
+    public ResponseEntity<?> update(@Valid @RequestBody CustomerDto customerDto, @PathVariable Integer id) {
         return customerService.updateCustomer(id, customerDto);
     }
 
     @DeleteMapping("/{id}")
-    void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable Integer id) {
         customerService.deleteCustomer(id);
     }
 

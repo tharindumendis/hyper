@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/product")
+@CrossOrigin(origins = "*")
 //@CrossOrigin(origins = "http://localhost:5173") // we can set the origin here for access this controller api(Tharindu Mendis)
 public class ProductController {
 
@@ -30,25 +31,25 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public List<ProductDto> getAllProducts() {
+    public ResponseEntity<?> getAllProducts() {
         return productService.getAllProducts();
     }
     @GetMapping("/stock")
-    public List<ProductStockDto> getAllProductsStock() {
+    public ResponseEntity<?> getAllProductsStock() {
         return productService.getProductStock();
     }
 
     @GetMapping("/stock/{id}")
-    public ProductStockDto getProductStockById(@PathVariable Integer id) {
+    public ResponseEntity<?> getProductStockById(@PathVariable Integer id) {
         return productService.getProductStockById(id);
     }
     @GetMapping("/{id}")
-    public ProductDto getProductById(@PathVariable Integer id) {
+    public ResponseEntity<?> getProductById(@PathVariable Integer id) {
         return productService.getProductById(id);
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ProductDto createProductWithImage(
+    public ResponseEntity<?> createProductWithImage(
             @RequestPart("product") String productJson,
             @RequestPart("image") MultipartFile image) throws JsonProcessingException {
 
@@ -58,13 +59,13 @@ public class ProductController {
         return productService.createProduct(productDto, image);
     }
     @PostMapping("")
-    public ProductDto createProduct(
+    public ResponseEntity<?> createProduct(
             @RequestBody ProductDto productDto) {
         return productService.createProduct(productDto, null);
     }
 
     @PutMapping(value = "{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ProductDto updateProductWithoutImage(
+    public ResponseEntity<?> updateProductWithoutImage(
             @PathVariable Integer id,
             @RequestPart("product") String productJson,
             @RequestPart("image") MultipartFile image) throws JsonProcessingException {
@@ -76,13 +77,13 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ProductDto updateProductWithoutImage(@PathVariable Integer id, @Valid @RequestBody ProductDto productDto) {
+    public ResponseEntity<?> updateProductWithoutImage(@PathVariable Integer id, @Valid @RequestBody ProductDto productDto) {
         return productService.updateProduct(id, productDto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Integer id) {
-        productService.deleteProduct(id);
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
+        return productService.deleteProduct(id);
     }
 
 
