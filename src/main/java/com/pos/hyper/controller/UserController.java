@@ -1,10 +1,12 @@
 package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.user.User;
 import com.pos.hyper.model.user.UserDto;
 import com.pos.hyper.model.user.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +23,14 @@ public class UserController {
         this.customExceptionHandler = customExceptionHandler;
     }
 
+    // ********* This request for response only for detail of themself *********
+//    @PostAuthorize("hasRole('USER') and returnObject.username == authentication.name")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("")
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
