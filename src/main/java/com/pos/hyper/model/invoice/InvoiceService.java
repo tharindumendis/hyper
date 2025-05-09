@@ -4,6 +4,7 @@ import com.pos.hyper.DTO.InvoiceDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.PaymentMethod;
 import com.pos.hyper.repository.InvoiceRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,16 +23,18 @@ public class InvoiceService {
         this.customExceptionHandler = customExceptionHandler;
     }
 
-    public InvoiceDto getInvoiceById(Integer id) {
-        Invoice invoice = invoiceRepository.findById(id)
-                .orElseThrow(() -> customExceptionHandler.handleNotFoundException("Invoice with id " + id + " not found"));
-        return invoiceMapper.toInvoiceDto(invoice);
+    public ResponseEntity<?> getInvoiceById(Integer id) {
+        Invoice invoice = invoiceRepository.findById(id).orElse(null);
+        if (invoice == null) {
+            return customExceptionHandler.notFoundException("Invoice with id " + id + " not found");
+        }
+        return ResponseEntity.ok(invoiceMapper.toInvoiceDto(invoice));
     }
     public List<InvoiceDto> getAllInvoices() {
         List<Invoice> invoices = invoiceRepository.findAll();
         return invoices.stream().map(invoiceMapper::toInvoiceDto).toList();
     }
-    public InvoiceDto createInvoice(InvoiceDto invoiceDto) {
+    public  ResponseEntity<?> createInvoice(InvoiceDto invoiceDto) {
 
         Invoice invoice = invoiceMapper.toInvoice(invoiceDto);
         invoice.setTotal(0.0);
@@ -49,23 +52,27 @@ public class InvoiceService {
 
 
         Invoice savedInvoice = invoiceRepository.save(invoice);
-        return invoiceMapper.toInvoiceDto(savedInvoice);
+        return ResponseEntity.ok(invoiceMapper.toInvoiceDto(savedInvoice));
     }
     @Transactional
-    public InvoiceDto updateInvoice(Integer id, InvoiceDto invoiceDto) {
-        Invoice invoice = invoiceRepository.findById(id)
-                .orElseThrow(() -> customExceptionHandler
-                        .handleNotFoundException("Invoice with id " + id + " not found"));
+    public ResponseEntity<?> updateInvoice(Integer id, InvoiceDto invoiceDto) {
+        Invoice invoice = invoiceRepository.findById(id).orElse(null);
+        if(invoice == null){
+            return customExceptionHandler.notFoundException("Invoice with id " + id + " not found");
+        }
         double total = invoice.getTotal();
         Invoice newInvoice = invoiceMapper.toInvoice(invoiceDto, invoice);
         newInvoice.setTotal(total);
         Invoice savedInvoice = invoiceRepository.save(newInvoice);
-        return invoiceMapper.toInvoiceDto(savedInvoice);
+        return ResponseEntity.ok(invoiceMapper.toInvoiceDto(savedInvoice));
     }
 
-    public void deleteInvoice(Integer id) {
-        Invoice invoice = invoiceRepository.findById(id)
-                .orElseThrow(() -> customExceptionHandler.handleNotFoundException("Invoice with id " + id + " not found"));
+    public ResponseEntity<?> deleteInvoice(Integer id) {
+        Invoice invoice = invoiceRepository.findById(id).orElse(null);
+        if(invoice == null) {
+            return customExceptionHandler.notFoundException("Invoice with id " + id + " not found");
+        }
         invoiceRepository.delete(invoice);
+        return ResponseEntity.ok("Invoice deleted");
     }
 }

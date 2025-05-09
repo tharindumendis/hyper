@@ -22,18 +22,18 @@ public class PurchaseController {
     }
 
     @GetMapping("")
-    public List<PurchaseDto> getStockInventory() {
+    public ResponseEntity<?> getStockInventory() {
 
         return purchaseService.getStockGRN();
     }
 
     @PostMapping("")
-    public PurchaseDto createStock(@RequestBody PurchaseDto sIDto) {
+    public ResponseEntity<?> createStock(@RequestBody PurchaseDto sIDto) {
 
         return purchaseService.createPurchase(sIDto);
     }
     @PutMapping("/{id}")
-    public PurchaseDto updateStock(@PathVariable Integer id, @RequestBody PurchaseDto sIDto) {
+    public ResponseEntity<?> updateStock(@PathVariable Integer id, @RequestBody PurchaseDto sIDto) {
         return purchaseService.returnPurchase(id, sIDto);
     }
 

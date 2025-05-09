@@ -10,6 +10,7 @@ import com.pos.hyper.model.invoice.InvoiceMapper;
 import com.pos.hyper.model.invoice.InvoiceService;
 import com.pos.hyper.repository.InvoiceItemRepository;
 import com.pos.hyper.repository.InvoiceRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +39,8 @@ public class SaleInvoiceService {
         this.customExceptionHandler = customExceptionHandler;
     }
 
-    public List<SaleInvoiceDto> getSale() {
-        return invoiceService.getAllInvoices()
+    public ResponseEntity<?> getSale() {
+        return ResponseEntity.ok(invoiceService.getAllInvoices()
                 .stream()
                 .map(
                         invoiceDto -> new SaleInvoiceDto(
@@ -47,26 +48,26 @@ public class SaleInvoiceService {
                                 invoiceItemService.getAllByInvoiceId(invoiceDto.id())
                         )
                 )
-                .toList();
+                .toList());
 
     }
-    public SaleInvoiceDto getSaleById( Integer id) {
+    public ResponseEntity<?> getSaleById( Integer id) {
         Invoice invoice = invoiceRepository.findById(id).orElseThrow();
         List<InvoiceItem> invoiceItems = invoiceItemRepository.findAllByInvoiceId(id);
-        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), invoiceItemMapper.toDtoList(invoiceItems));
+        return ResponseEntity.ok(new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), invoiceItemMapper.toDtoList(invoiceItems)));
     }
-    public SaleInvoiceDto createSale(SaleInvoiceDto saleInvoiceDto) {
+    public ResponseEntity<?> createSale(SaleInvoiceDto saleInvoiceDto) {
         if(!Objects.equals(saleInvoiceDto.items().getFirst().invoiceId(), saleInvoiceDto.invoice().id())){
             throw  customExceptionHandler.handleBadRequestException(" Invoice id does not match");
         }
         return invoiceItemService.createInvoiceItems(saleInvoiceDto);
     }
     @Transactional
-    public SaleInvoiceDto returnSale(Integer id, SaleInvoiceDto saleInvoiceDto) {
+    public ResponseEntity<?> returnSale(Integer id, SaleInvoiceDto saleInvoiceDto) {
          if(!Objects.equals(saleInvoiceDto.items().getFirst().invoiceId(), saleInvoiceDto.invoice().id())){
             throw  customExceptionHandler.handleBadRequestException(" Invoice id does not match");
          }
-        return invoiceItemService.returnInvoiceItems(id, saleInvoiceDto.items());
+        return ResponseEntity.ok(invoiceItemService.returnInvoiceItems(id, saleInvoiceDto.items()));
     }
 
 

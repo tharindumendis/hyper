@@ -11,6 +11,7 @@ import com.pos.hyper.model.product.Product;
 import com.pos.hyper.repository.GrnItemRepository;
 import com.pos.hyper.repository.GRNRepository;
 import com.pos.hyper.repository.ProductRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,18 +42,19 @@ public class GRNItemService {
         this.grnMapper = grnMapper;
         this.stockService = stockService;
     }
-    public GRNItemDto createGRNItem(GRNItemDto grnItemDto) {
+    public ResponseEntity<?> createGRNItem(GRNItemDto grnItemDto) {
         if (grnItemDto.id() != null){
-            throw customExceptionHandler.handleBadRequestException("GrnItem id must be null for create GrnItem");
+            return ResponseEntity.badRequest().body("GrnItem id must be null for create GrnItem");
         }
         validateGrn(grnItemDto);
-        GRN grn = grnRepository
-                .findById(grnItemDto.GRNId())
-                .orElseThrow(()-> customExceptionHandler
-                        .handleNotFoundException("Inventory with id " + grnItemDto.GRNId() + " not found"));
-        Product product = productRepository.findById(grnItemDto.productId())
-                .orElseThrow(()->customExceptionHandler
-                        .handleNotFoundException("Product with id " + grnItemDto.productId() + " not found"));
+        GRN grn = grnRepository.findById(grnItemDto.GRNId()).orElse(null);
+        if(grn == null){
+            return customExceptionHandler.notFoundException("Inventory with id " + grnItemDto.GRNId() + " not found");
+        }
+        Product product = productRepository.findById(grnItemDto.productId()).orElse(null);
+        if(product == null){
+            return customExceptionHandler.notFoundException("Product with id " + grnItemDto.productId() + " not found");
+        }
         GRNItem grnItem = grnItemMapper.toGRNItem(grnItemDto, product, grn);
 
         grnItem = saveGRNAfterDiscount(grnItem);
@@ -69,8 +71,7 @@ public class GRNItemService {
         grn.setTotal(grnItemRepository.getTotalByGRN(grnItem.getGrn().getId()));
         grnRepository.save(grn);
 
-
-        return grnItemMapper.toGRNItemDto(grnItem);
+        return ResponseEntity.ok(grnItemMapper.toGRNItemDto(grnItem));
     }
     public PurchaseDto createGRNItems(List<GRNItemDto> sGRNDto) {
         List<Integer> productIds = sGRNDto.stream()
@@ -79,7 +80,6 @@ public class GRNItemService {
                 .toList();
         Map<Integer, Product> productMap = productRepository.findAllById(productIds).stream()
                 .collect(Collectors.toMap(Product::getId, Function.identity()));
-
         List<GRNItem> GRNItemItems = new ArrayList<>();
 
         GRN grn = grnRepository.findById(sGRNDto.getFirst().GRNId())
@@ -120,8 +120,7 @@ public class GRNItemService {
         grnRepository.save(grn);
 
 
-        return new PurchaseDto(grnMapper.toGRNDto(grn), grnItemRepository.findAllByGrn_Id(grn.getId()).stream().map(grnItemMapper::toGRNItemDto).collect(Collectors.toList()));
-
+        return (new PurchaseDto(grnMapper.toGRNDto(grn), grnItemRepository.findAllByGrn_Id(grn.getId()).stream().map(grnItemMapper::toGRNItemDto).collect(Collectors.toList())));
 
     }
     @Transactional
@@ -179,22 +178,27 @@ public class GRNItemService {
         stockService.updateAllStock(stocks);
         grn.setTotal(grnItemRepository.getTotalByGRN(grn.getId()));
         GRN newGRN = grnRepository.save(grn);
-        return new PurchaseDto(grnMapper.toGRNDto(newGRN), grnItemRepository.findAllByGrn_Id(grn.getId()).stream().map(grnItemMapper::toGRNItemDto).collect(Collectors.toList()));
+        return (new PurchaseDto(grnMapper.toGRNDto(newGRN), grnItemRepository.findAllByGrn_Id(grn.getId()).stream().map(grnItemMapper::toGRNItemDto).collect(Collectors.toList())));
     }
 
     @Transactional
-    public GRNItemDto ReturnGRN(Integer id, GRNItemDto grnItemDto) {
-        validateGrn(grnItemDto);
-        GRN grn = grnRepository
-                .findById(grnItemDto.GRNId())
-                .orElseThrow(()-> customExceptionHandler
-                        .handleNotFoundException("GRN with id " + grnItemDto.GRNId() + " not found"));
-        Product product = productRepository.findById(grnItemDto.productId())
-                .orElseThrow(()->customExceptionHandler
-                        .handleNotFoundException("Product with id " + grnItemDto.productId() + " not found"));
-        GRNItem oldGRNItem = grnItemRepository.findById(id)
-                .orElseThrow(()->customExceptionHandler
-                        .handleNotFoundException("Old grnItem with id " + id + " not found"));
+    public ResponseEntity<?> ReturnGRN(Integer id, GRNItemDto grnItemDto) {
+        ResponseEntity<?> res = validateGrn(grnItemDto);
+        if(res != null) {
+            return res;
+        }
+        GRN grn = grnRepository.findById(grnItemDto.GRNId()).orElse(null);
+        if(grn == null) {
+            return  customExceptionHandler.notFoundException("Grn with id " + id + " not found");
+        }
+        Product product = productRepository.findById(grnItemDto.productId()).orElse(null);
+        if(product == null) {
+            return  customExceptionHandler.notFoundException("Product with id " + id + " not found");
+        }
+        GRNItem oldGRNItem = grnItemRepository.findById(id).orElse(null);
+        if(oldGRNItem == null) {
+            return customExceptionHandler.notFoundException("Old grnItem with id " + id + " not found");
+        }
 
         Double oldQty = oldGRNItem.getQuantity();
         Double newQty = grnItemDto.quantity();
@@ -215,7 +219,7 @@ public class GRNItemService {
         //update GRN total
         grn.setTotal(grnItemRepository.getTotalByGRN(grn.getId()));
         grnRepository.save(grn);
-        return grnItemMapper.toGRNItemDto(grnItem);
+        return ResponseEntity.ok(grnItemMapper.toGRNItemDto(grnItem));
     }
 
     private GRNItem saveGRNAfterDiscount(GRNItem grnItem) {
@@ -228,28 +232,33 @@ public class GRNItemService {
         return grnItem;
     }
 
-    public GRNItemDto getGRNItemById(Integer id) {
-        GRNItem grnItem = grnItemRepository.findById(id)
-                .orElseThrow(() -> customExceptionHandler.handleNotFoundException("GRNItem with id " + id + " not found"));
-        return grnItemMapper.toGRNItemDto(grnItem);
+    public ResponseEntity<?> getGRNItemById(Integer id) {
+        GRNItem grnItem = grnItemRepository.findById(id).orElse(null);
+        if(grnItem == null) {
+            return  customExceptionHandler.notFoundException("GRNItem with id " + id + " not found");
+        }
+        return ResponseEntity.ok(grnItemMapper.toGRNItemDto(grnItem));
     }
-    public List<GRNItemDto> getAllGRNItem() {
+    public ResponseEntity<?> getAllGRNItem() {
         List<GRNItem> GRNItemSet = grnItemRepository.findAll();
-        return GRNItemSet.stream().map(grnItemMapper::toGRNItemDto).toList();
+        return ResponseEntity.ok(GRNItemSet.stream().map(grnItemMapper::toGRNItemDto).toList());
     }
-    public void deleteGRNItem(Integer id) {
-        GRNItem grnItem = grnItemRepository.findById(id)
-                .orElseThrow(() -> customExceptionHandler.handleNotFoundException("GRNItem with id " + id + " not found"));
+    public ResponseEntity<?> deleteGRNItem(Integer id) {
+        GRNItem grnItem = grnItemRepository.findById(id).orElse(null);
+        if(grnItem == null) {
+            return customExceptionHandler.notFoundException("GRNItem with id " + id + " not found");
+        }
         grnItemRepository.delete(grnItem);
+        return ResponseEntity.ok().build();
     }
-    public List<GRNItemDto> getGRNItemByGRNId(Integer id) {
+    public ResponseEntity<?> getGRNItemByGRNId(Integer id) {
         List<GRNItem> GRNItemSet = grnItemRepository.findAllByGrn_Id(id);
-        return GRNItemSet.stream().map(grnItemMapper::toGRNItemDto).toList();
+        return ResponseEntity.ok(GRNItemSet.stream().map(grnItemMapper::toGRNItemDto).toList());
     }
 
 
 
-    public void validateGrn(GRNItemDto grnItemDto) {
+    public ResponseEntity<?> validateGrn(GRNItemDto grnItemDto) {
         List<String> errors = new ArrayList<>();
 
         if(grnItemDto.quantity() <= 0) {
@@ -265,8 +274,9 @@ public class GRNItemService {
             errors.add("Amount must be greater than 0");
         }
         if(!errors.isEmpty()) {
-            throw customExceptionHandler.handleBadRequestExceptionSet(errors);
+            return customExceptionHandler.badRequestExceptionSet(errors);
         }
+        return null;
 
     }
 

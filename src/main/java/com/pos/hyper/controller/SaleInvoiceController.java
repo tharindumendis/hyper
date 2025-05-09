@@ -21,22 +21,22 @@ public class SaleInvoiceController {
         this.customExceptionHandler = customExceptionHandler;
     }
     @GetMapping("")
-    public List<SaleInvoiceDto> getSale() {
+    public ResponseEntity<?> getSale() {
         return saleInvoiceService.getSale();
 
     }
     @GetMapping("/{id}")
-    public SaleInvoiceDto getSaleById(@PathVariable Integer id) {
+    public ResponseEntity<?> getSaleById(@PathVariable Integer id) {
        return saleInvoiceService.getSaleById(id);
     }
 
     @PostMapping("")
-    public SaleInvoiceDto createSale(@RequestBody SaleInvoiceDto saleInvoiceDto) {
+    public ResponseEntity<?> createSale(@RequestBody SaleInvoiceDto saleInvoiceDto) {
         return saleInvoiceService.createSale(saleInvoiceDto);
     }
 
     @PutMapping("/{id}")
-    public SaleInvoiceDto returnSale(@PathVariable Integer id, @RequestBody SaleInvoiceDto saleInvoiceDto) {
+    public ResponseEntity<?> returnSale(@PathVariable Integer id, @RequestBody SaleInvoiceDto saleInvoiceDto) {
         return saleInvoiceService.returnSale(id, saleInvoiceDto);
     }
 
