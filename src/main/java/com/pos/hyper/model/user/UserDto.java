@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Pattern;
 public record UserDto(
         Integer id,
         @NotNull(message = "name cannot be blank or empty")
-        String name,
+        String username,
 
         @NotBlank(message = "phone cannot be blank or empty")
         @Pattern(regexp = "^\\d{10}$", message = "phone must be 10 digits")
