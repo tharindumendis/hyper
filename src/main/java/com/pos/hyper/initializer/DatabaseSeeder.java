@@ -46,7 +46,7 @@ public class DatabaseSeeder {
         if (userRepository.findById(1).isEmpty()) {
             User admin = new User();
             admin.setActive(true);
-            admin.setName("Admin");
+            admin.setUsername("Admin");
             admin.setPassword("admin");
             admin.setRole(Role.ADMIN);
             admin.setEmail("admin@hyper.com");

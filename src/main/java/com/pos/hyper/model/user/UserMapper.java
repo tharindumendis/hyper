@@ -7,7 +7,7 @@ public class UserMapper {
     public UserDto toUserDto(User user) {
         return new UserDto(
                 user.getId(),
-                user.getName(),
+                user.getUsername(),
                 user.getPhone(),
                 user.getEmail(),
                 user.getPassword(),
@@ -17,7 +17,7 @@ public class UserMapper {
     }
     public User toUser(UserDto userDto) {
         User user = new User();
-        user.setName(userDto.name());
+        user.setUsername(userDto.username());
         user.setPhone(userDto.phone());
         user.setEmail(userDto.email());
         user.setPassword(userDto.password());
@@ -26,7 +26,7 @@ public class UserMapper {
         return user;
     }
     public User toUser(UserDto userDto, User user) {
-        user.setName(userDto.name() == null ? user.getName() : userDto.name());
+        user.setUsername(userDto.username() == null ? user.getUsername() : userDto.username());
         user.setPhone(userDto.phone() == null ? user.getPhone() : userDto.phone());
         user.setEmail(userDto.email() == null ? user.getEmail() : userDto.email());
         user.setPassword(userDto.password() == null ? user.getPassword() : userDto.password());
