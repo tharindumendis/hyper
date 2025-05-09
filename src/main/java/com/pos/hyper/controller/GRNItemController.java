@@ -23,24 +23,24 @@ public class GRNItemController {
     }
 
     @GetMapping("")
-    public List<GRNItemDto> getAllGRNItems() {
+    public ResponseEntity<?> getAllGRNItems() {
         return grnItemService.getAllGRNItem();
     }
     @GetMapping("/{id}")
-    public GRNItemDto getGRNItemById(@PathVariable Integer id) {
+    public ResponseEntity<?> getGRNItemById(@PathVariable Integer id) {
         return grnItemService.getGRNItemById(id);
     }
     @PostMapping("")
-    public GRNItemDto createGRNItem(@Valid @RequestBody GRNItemDto grnItemDto) {
+    public ResponseEntity<?> createGRNItem(@Valid @RequestBody GRNItemDto grnItemDto) {
         return grnItemService.createGRNItem(grnItemDto);
     }
     @PutMapping("/{id}")
-    public GRNItemDto returnGRNItem(@PathVariable Integer id, @Valid @RequestBody GRNItemDto grnItemDto) {
+    public ResponseEntity<?> returnGRNItem(@PathVariable Integer id, @Valid @RequestBody GRNItemDto grnItemDto) {
         return grnItemService.ReturnGRN(id, grnItemDto);
     }
     @DeleteMapping("/{id}")
-    public void deleteGRNItem(@PathVariable Integer id) {
-        grnItemService.deleteGRNItem(id);
+    public ResponseEntity<?> deleteGRNItem(@PathVariable Integer id) {
+        return grnItemService.deleteGRNItem(id);
     }
 
 

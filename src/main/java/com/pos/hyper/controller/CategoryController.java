@@ -22,19 +22,19 @@ public class CategoryController {
     }
 
     @GetMapping("")
-    public List<CategoryDto> getAllCategories() {
+    public ResponseEntity<?> getAllCategories() {
         return categoryService.getAllCategories();
     }
     @GetMapping("/{id}")
-    public CategoryDto getCategoryById(@PathVariable Integer id) {
-        return categoryService.getCategoryById(id);
+    public ResponseEntity<?> getCategoryById(@PathVariable Integer id) {
+        return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
     @PostMapping("")
-    public CategoryDto createCategory(@Valid @RequestBody CategoryDto categoryDto) {
-        return categoryService.createCategory(categoryDto);
+    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
+        return ResponseEntity.ok(categoryService.createCategory(categoryDto));
     }
     @PutMapping("/{id}")
-    public CategoryDto updateCategory(@PathVariable Integer id,@Valid @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<?> updateCategory(@PathVariable Integer id,@Valid @RequestBody CategoryDto categoryDto) {
         return categoryService.updateCategory(id, categoryDto);
     }
     @DeleteMapping("/{id}")

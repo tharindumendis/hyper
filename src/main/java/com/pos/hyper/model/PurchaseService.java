@@ -2,8 +2,15 @@ package com.pos.hyper.model;
 
 import com.pos.hyper.DTO.PurchaseDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.grn.GRNMapper;
+import com.pos.hyper.model.grn_item.GRNItem;
+import com.pos.hyper.model.grn_item.GRNItemMapper;
 import com.pos.hyper.model.grn_item.GRNItemService;
 import com.pos.hyper.model.grn.GRNService;
+import com.pos.hyper.repository.GRNRepository;
+import com.pos.hyper.repository.GrnItemRepository;
+import org.apache.coyote.Response;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,45 +19,49 @@ import java.util.Objects;
 @Service
 public class PurchaseService {
     private final GRNItemService grnItemService;
-    private final GRNService grnService;
+    private final GrnItemRepository grnItemRepository;
+    private final GRNItemMapper grnItemMapper;
+    private final GRNRepository grnRepository;
+    private final GRNMapper grnMapper;
     private final CustomExceptionHandler customExceptionHandler;
 
 
-    public PurchaseService(GRNItemService grnItemService, GRNService grnService, CustomExceptionHandler customExceptionHandler) {
+    public PurchaseService(GRNItemService grnItemService, GrnItemRepository grnItemRepository, GRNItemMapper grnItemMapper, GRNRepository grnRepository, GRNMapper grnMapper, CustomExceptionHandler customExceptionHandler) {
         this.grnItemService = grnItemService;
-        this.grnService = grnService;
+        this.grnItemRepository = grnItemRepository;
+        this.grnItemMapper = grnItemMapper;
+        this.grnRepository = grnRepository;
+        this.grnMapper = grnMapper;
         this.customExceptionHandler = customExceptionHandler;
     }
 
 
 
-    public List<PurchaseDto> getStockGRN() {
+    public ResponseEntity<?> getStockGRN() {
 
-        return grnService
-                .getAllGRNs()
+        return ResponseEntity.ok(grnRepository.findAll()
                 .stream()
                 .map(
-                        GRNDto -> new PurchaseDto(
-                                GRNDto,
-                                grnItemService.getGRNItemByGRNId(GRNDto.id())
+                        GRN -> new PurchaseDto(
+                                grnMapper.toGRNDto(GRN),
+                                grnItemRepository.findAllByGrn_Id(GRN.getId()).stream().map(grnItemMapper::toGRNItemDto).toList()
                         )
-                ).toList();
+                ).toList());
     }
-    public PurchaseDto createPurchase(PurchaseDto sIDto) {
+    public ResponseEntity<?> createPurchase(PurchaseDto sIDto) {
 
 
         if(!Objects.equals(sIDto.items().getFirst().GRNId(), sIDto.grn().id())){
             throw customExceptionHandler.handleBadRequestException("GRN ID does not match "+sIDto.items().getFirst().GRNId()+"///"+ sIDto.grn().id());
         }
-
-        return grnItemService.createGRNItems(sIDto.items());
+        return ResponseEntity.ok(grnItemService.createGRNItems(sIDto.items()));
     }
 
 
-    public PurchaseDto returnPurchase(Integer id, PurchaseDto sIDto) {
+    public ResponseEntity<?> returnPurchase(Integer id, PurchaseDto sIDto) {
         if(!Objects.equals(sIDto.items().getFirst().GRNId(), sIDto.grn().id())){
             throw customExceptionHandler.handleBadRequestException("GRN ID does not match "+sIDto.items().getFirst().GRNId()+"///"+ sIDto.grn().id());
         }
-        return grnItemService.updateGRNItems( sIDto.items());
+        return ResponseEntity.ok(grnItemService.updateGRNItems( sIDto.items()));
     }
 }

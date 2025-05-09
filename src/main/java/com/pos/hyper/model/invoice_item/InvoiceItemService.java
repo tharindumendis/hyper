@@ -17,6 +17,7 @@ import com.pos.hyper.repository.InvoiceItemRepository;
 import com.pos.hyper.repository.InvoiceRepository;
 import com.pos.hyper.repository.ProductRepository;
 import com.pos.hyper.repository.StockRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,19 +56,19 @@ public class InvoiceItemService {
         this.productMapper = productMapper;
         this.iscService = invoiceStockConsumptionService;
     }
-    public List<InvoiceItemDto> getAllInvoiceItems() {
+    public ResponseEntity<?> getAllInvoiceItems() {
         List<InvoiceItem> invoiceItems = invoiceItemRepository.findAll();
-        return invoiceItems.stream().map(invoiceItemMapper::toInvoiceItemDto).collect(Collectors.toList());
+        return ResponseEntity.ok(invoiceItems.stream().map(invoiceItemMapper::toInvoiceItemDto).collect(Collectors.toList()));
     }
 
 
-    public InvoiceItemDto getInvoiceItemById(Integer id) {
+    public ResponseEntity<?> getInvoiceItemById(Integer id) {
         InvoiceItem invoiceItem = invoiceItemRepository.findById(id)
 
                 .orElseThrow(()-> customExceptionHandler
                         .handleNotFoundException("InvoiceItem with id " + id + " not found"));
 
-        return invoiceItemMapper.toInvoiceItemDto(invoiceItem);
+        return ResponseEntity.ok(invoiceItemMapper.toInvoiceItemDto(invoiceItem));
     }
 
     public List<InvoiceItemDto> getAllByInvoiceId(Integer id){
@@ -77,18 +78,19 @@ public class InvoiceItemService {
                 .toList();
     }
 
-    public InvoiceItemDto createInvoiceItem(InvoiceItemDto invoiceItemDto) {
+    public ResponseEntity<?> createInvoiceItem(InvoiceItemDto invoiceItemDto) {
 
         ProductStockDto product = productRepository.fetchProductStockAndCostById(invoiceItemDto.productId());
         if (product == null){
-                throw customExceptionHandler.handleNotFoundException("Product with id " + invoiceItemDto.productId() + " not found");
+                return customExceptionHandler.notFoundException("Product with id " + invoiceItemDto.productId() + " not found");
         }
 
-        Invoice invoice = invoiceRepository.findById(invoiceItemDto.invoiceId())
-                .orElseThrow(()-> customExceptionHandler
-                        .handleNotFoundException(" Invoice with id " + invoiceItemDto.invoiceId() + " not found"));
+        Invoice invoice = invoiceRepository.findById(invoiceItemDto.invoiceId()).orElse(null);
+        if(invoice == null){
+            return customExceptionHandler.notFoundException("Invoice with id " + invoiceItemDto.invoiceId() + " not found");
+        }
         if(!product.isActive()){
-            throw customExceptionHandler.handleBadRequestException("Product with id "+product.id()+" is not active");
+            return customExceptionHandler.badRequestException("Product with id "+product.id()+" is not active");
         }
 
         InvoiceItem invoiceItem = invoiceItemMapper.toInvoiceItem(invoiceItemDto, productMapper.toProduct(product), invoice);
@@ -103,10 +105,10 @@ public class InvoiceItemService {
 
         updateProductAndInvoice(productMapper.toProduct(product), invoice, invoiceItem.getQuantity());
 
-        return invoiceItemMapper.toInvoiceItemDto(invoiceItem);
+        return ResponseEntity.ok(invoiceItemMapper.toInvoiceItemDto(invoiceItem));
     }
 
-    public SaleInvoiceDto createInvoiceItems(SaleInvoiceDto saleInvoiceDto) {
+    public ResponseEntity<?> createInvoiceItems(SaleInvoiceDto saleInvoiceDto) {
         List<InvoiceItemDto> invoiceItemDtos = saleInvoiceDto.items();
         Invoice reqInvoice = new Invoice();
         reqInvoice.setId(saleInvoiceDto.invoice().id());
@@ -126,15 +128,17 @@ public class InvoiceItemService {
 
 
 
-        Invoice invoice = invoiceRepository.findById(invoiceItemDtos.getFirst().invoiceId())
-                .orElseThrow(()-> customExceptionHandler.handleNotFoundException("Invoice with id " + invoiceItemDtos.get(0).invoiceId() + " not found"));
+        Invoice invoice = invoiceRepository.findById(invoiceItemDtos.getFirst().invoiceId()).orElse(null);
+        if(invoice == null){
+            return customExceptionHandler.notFoundException("Invoice with id " + invoiceItemDtos.getFirst().invoiceId() + " not found");
+        }
 
         if(reqInvoice.getPaymentMethod()!= null){
                 invoice.setPaymentMethod(reqInvoice.getPaymentMethod());
         }
 
         List<InvoiceItem> invoiceItems = new ArrayList<>();
-        List<List<InvoiceStockConsumption>> listOfISCList = new ArrayList<>();
+        List<List<InvoiceStockConsumption>> listOfISCList;
         List<Integer> productIdsForStocks = new ArrayList<>();
         List<Double> productQuantities = new ArrayList<>();
 
@@ -191,7 +195,7 @@ public class InvoiceItemService {
 
 
 
-        return new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), invoiceItemRepository.findAllByInvoiceId(invoice.getId()).stream().map(invoiceItemMapper::toInvoiceItemDto).collect(Collectors.toList()));
+        return ResponseEntity.ok(new SaleInvoiceDto(invoiceMapper.toInvoiceDto(invoice), invoiceItemRepository.findAllByInvoiceId(invoice.getId()).stream().map(invoiceItemMapper::toInvoiceItemDto).collect(Collectors.toList())));
     }
 
     @Transactional
@@ -288,18 +292,20 @@ public class InvoiceItemService {
         return invoiceItemMapper.toInvoiceItemDto(invoiceItem);
     }
 
-    public void deleteInvoiceItem(Integer id) {
-        InvoiceItem invoiceItem = invoiceItemRepository.findById(id)
-                .orElseThrow(() -> customExceptionHandler
-                        .handleNotFoundException("InvoiceItem with id " + id + " not found"));
-        Invoice invoice = invoiceRepository.findById(invoiceItem.getInvoice().getId()).orElseThrow(()->
-                customExceptionHandler.handleNotFoundException("invoice with id " + invoiceItem.getInvoice().getId() + " not found"));
-
+    public ResponseEntity<?> deleteInvoiceItem(Integer id) {
+        InvoiceItem invoiceItem = invoiceItemRepository.findById(id).orElse(null);
+        if (invoiceItem == null) {
+            return customExceptionHandler.notFoundException("InvoiceItem with id " + id + " not found");
+        }
+        Invoice invoice = invoiceRepository.findById(invoiceItem.getInvoice().getId()).orElse(null);
+        if (invoice == null) {
+            return customExceptionHandler.notFoundException("invoice with id " + id + " not found");
+        }
         invoiceItemRepository.delete(invoiceItem);
         Double total = invoiceItemRepository.getTotalByInvoice(invoice.getId());
         invoice.setTotal(total);
         invoiceRepository.save(invoice);
-
+        return ResponseEntity.ok().build();
     }
 
 
@@ -335,9 +341,7 @@ public class InvoiceItemService {
             errors.add("Amount must be greater than 0");
         }
         if (invoiceItemDto.quantity() <= 0) {
-            if(type.equals("return") || invoiceItemDto.quantity() == 0) {
-                return;
-            }else {
+            if(!type.equals("return") || !(invoiceItemDto.quantity() == 0)) {
                 errors.add("Quantity must be greater than 0");
             }
         }
@@ -353,7 +357,7 @@ public class InvoiceItemService {
 
 
         if (!errors.isEmpty()) {
-            throw customExceptionHandler.handleBadRequestExceptionSet(errors);
+            throw  customExceptionHandler.handleBadRequestExceptionSet(errors);
         }
     }
 

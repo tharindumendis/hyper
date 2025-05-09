@@ -3,6 +3,7 @@ package com.pos.hyper.model.supplier;
 import com.pos.hyper.DTO.SupplierDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.repository.SupplierRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,37 +25,40 @@ public class SupplierService {
     }
 
 
-    public SupplierDto createSupplier(SupplierDto supplierDto) {
-        validateSupplier(supplierDto);
+    public ResponseEntity<?> createSupplier(SupplierDto supplierDto) {
+        ResponseEntity<?> rs = validateSupplier(supplierDto);
+        if(rs != null) return rs;
         Supplier supplier = supplierMapper.toSupplier(supplierDto);
         supplier = supplierRepository.save(supplier);
-        return supplierMapper.toSupplierDto(supplier);
+        return ResponseEntity.ok(supplierMapper.toSupplierDto(supplier));
     }
-    public List<SupplierDto> getAllSuppliers() {
+    public ResponseEntity<?> getAllSuppliers() {
         List<Supplier> suppliers = supplierRepository.findAll();
-        return suppliers.stream().map(supplierMapper::toSupplierDto).collect(Collectors.toList());
+        return ResponseEntity.ok(suppliers.stream().map(supplierMapper::toSupplierDto).collect(Collectors.toList()));
     }
-    public SupplierDto getSupplierById(Integer id) {
-        Supplier supplier = supplierRepository
-                .findById(id)
-                .orElseThrow(()-> customExceptionHandler.handleNotFoundException("Supplier with id " + id + " not found"));
-        return supplierMapper.toSupplierDto(supplier);
+    public ResponseEntity<?> getSupplierById(Integer id) {
+        Supplier supplier = supplierRepository.findById(id).orElse(null);
+        if (supplier == null) {
+            return customExceptionHandler.notFoundException("Supplier with id " + id + " not found");
+        }
+        return ResponseEntity.ok(supplierMapper.toSupplierDto(supplier));
     }
     @Transactional
-    public SupplierDto updateSupplier(Integer id, SupplierDto supplierDto) {
-        Supplier supplier = supplierRepository
-                .findById(id)
-                .orElseThrow(()-> customExceptionHandler.handleNotFoundException("Supplier with id " + id + " not found"));
+    public ResponseEntity<?> updateSupplier(Integer id, SupplierDto supplierDto) {
+        Supplier supplier = supplierRepository.findById(id).orElse(null);
+        if(supplier == null) {
+            return customExceptionHandler.notFoundException("Supplier with id " + id + " not found");
+        }
         supplier = supplierMapper.toSupplier(supplierDto, supplier);
         supplier = supplierRepository.save(supplier);
-        return supplierMapper.toSupplierDto(supplier);
+        return ResponseEntity.ok(supplierMapper.toSupplierDto(supplier));
     }
     public void deleteSupplier(Integer id) {
         supplierRepository.deleteById(id);
     }
 
 
-    private void validateSupplier(SupplierDto supplierDto) {
+    private ResponseEntity<?> validateSupplier(SupplierDto supplierDto) {
         List<String> errors = new ArrayList<>();
         if (supplierRepository.existsByEmail(supplierDto.email())) {
             errors.add("Email already in use!");
@@ -63,8 +67,9 @@ public class SupplierService {
             errors.add("Phone number already in use!");
         }
         if (!errors.isEmpty()) {
-             throw customExceptionHandler.handleBadRequestExceptionSet(errors);
+             return customExceptionHandler.badRequestExceptionSet(errors);
         }
+        return null;
     }
 
 
