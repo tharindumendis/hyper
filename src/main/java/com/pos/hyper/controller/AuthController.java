@@ -72,12 +72,15 @@ public class AuthController {
         if(userRepository.existsByEmail(userDto.email())){
             return ResponseEntity.badRequest().body("Email is already in use");
         }
+        if(userRepository.existsByPhone(userDto.phone())){
+            return ResponseEntity.badRequest().body("Phone is already in use");
+        }
+
         User user = userMapper.toUser(userDto);
         user.setPassword(passwordEncoder.encode(userDto.password()));
 
-        if(user.getRole() == null){
-            user.setRole(Role.USER);
-        }
+        user.setRole(Role.USER);
+        user.setActive(false);
 
         userRepository.save(user);
 
@@ -85,5 +88,18 @@ public class AuthController {
 
     }
 
-
+    @PutMapping("/forgetpassword")
+    public ResponseEntity<?> forgetPassword (@RequestBody UserDto userDto){
+        User user = userRepository.findByUsername(userDto.username())
+                .orElse(null);
+        if(user == null){
+            return ResponseEntity.badRequest().body("User not found");
+        }
+        user.setPassword(passwordEncoder.encode(userDto.password()));
+        user.setActive(false);
+        userRepository.save(user);
+        return ResponseEntity.ok(
+                new MessageResponse(
+                        "Password changed and to activate your account please contact administration "));
+    }
 }
