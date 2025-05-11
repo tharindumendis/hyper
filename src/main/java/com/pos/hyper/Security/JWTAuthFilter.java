@@ -33,7 +33,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(req);
-            System.out.println("This is the fucking token : " + jwt);
+            System.out.println("This the token : " + jwt);
             if(jwt != null && jwtUtil.validateToken(jwt)){
                 String username = jwtUtil.getUsernameFromJwtToken(jwt);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
