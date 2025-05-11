@@ -12,7 +12,7 @@ public record UserDto(
         String username,
 
         @NotBlank(message = "phone cannot be blank or empty")
-        @Pattern(regexp = "^\\d{10}$", message = "phone must be 10 digits")
+//        @Pattern(regexp = "^\\d{10}$", message = "phone must be 10 digits")
         String phone,
 
         @Email(message = "email must be valid")
