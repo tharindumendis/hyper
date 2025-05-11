@@ -34,12 +34,12 @@ public class ProductController {
     public ResponseEntity<?> getAllProducts() {
         return productService.getAllProducts();
     }
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping("/stock")
     public ResponseEntity<?> getAllProductsStock() {
         return productService.getProductStock();
     }
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping("/stock/{id}")
     public ResponseEntity<?> getProductStockById(@PathVariable Integer id) {
         return productService.getProductStockById(id);
