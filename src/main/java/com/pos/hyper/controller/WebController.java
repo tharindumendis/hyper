@@ -13,9 +13,6 @@ public class WebController {
     String sayHello() {
         return "Hello, we are team hyper... <a href=\"https://documenter.getpostman.com/view/40718634/2sB2j4gX6J\">API Documentation</a>";
     }
-    @GetMapping("/home")
-    public String home() {
-        return "home";
-    }
+
 }
 
