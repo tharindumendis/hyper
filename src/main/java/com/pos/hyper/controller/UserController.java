@@ -1,12 +1,14 @@
 package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.Role;
 import com.pos.hyper.model.user.UserDto;
 import com.pos.hyper.model.user.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +32,7 @@ public class UserController {
     public List<UserDto> getAllUsers() {
         return userService.getAllUsers();
     }
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
@@ -52,4 +54,19 @@ public class UserController {
         return customExceptionHandler.handleMethodArgumentNotValid(exp);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/status/{id}")
+    public ResponseEntity<?> userStatus(@PathVariable Integer id,
+                                        @RequestParam Boolean isActive,
+                                        @AuthenticationPrincipal UserDetails userDetails) {
+        return userService.activateUser(id, isActive, userDetails.getUsername());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/role/{id}")
+    public ResponseEntity<?> changeUserRole(@PathVariable Integer id,
+                                            @RequestParam Role role,
+                                            @AuthenticationPrincipal UserDetails userDetails) {
+        return userService.changeUserRole(id, role, userDetails.getUsername());
+    }
 }
