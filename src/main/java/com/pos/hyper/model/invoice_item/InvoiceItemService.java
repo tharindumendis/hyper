@@ -5,6 +5,7 @@ import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.DTO.SaleInvoiceDto;
 import com.pos.hyper.model.PaymentMethod;
 import com.pos.hyper.model.Stock.StockService;
+import com.pos.hyper.model.customer.Customer;
 import com.pos.hyper.model.invoice.Invoice;
 import com.pos.hyper.model.invoice.InvoiceMapper;
 import com.pos.hyper.model.invoiceStockConsumption.InvoiceStockConsumption;
@@ -13,10 +14,7 @@ import com.pos.hyper.model.product.Product;
 import com.pos.hyper.model.product.ProductMapper;
 import com.pos.hyper.model.product.ProductService;
 import com.pos.hyper.model.product.ProductStockDto;
-import com.pos.hyper.repository.InvoiceItemRepository;
-import com.pos.hyper.repository.InvoiceRepository;
-import com.pos.hyper.repository.ProductRepository;
-import com.pos.hyper.repository.StockRepository;
+import com.pos.hyper.repository.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +39,10 @@ public class InvoiceItemService {
     private final ProductService productService;
     private final ProductMapper productMapper;
     private final InvoiceStockConsumptionService iscService;
+    private final CustomerRepository customerRepository;
 
 
-    public InvoiceItemService(InvoiceItemMapper invoiceItemMapper, CustomExceptionHandler customExceptionHandler, InvoiceItemRepository invoiceItemRepository, ProductRepository productRepository, InvoiceRepository invoiceRepository, InvoiceMapper invoiceMapper, StockService stockService, StockRepository stockRepository, ProductService productService, ProductMapper productMapper, InvoiceStockConsumptionService invoiceStockConsumptionService) {
+    public InvoiceItemService(InvoiceItemMapper invoiceItemMapper, CustomExceptionHandler customExceptionHandler, InvoiceItemRepository invoiceItemRepository, ProductRepository productRepository, InvoiceRepository invoiceRepository, InvoiceMapper invoiceMapper, StockService stockService, StockRepository stockRepository, ProductService productService, ProductMapper productMapper, InvoiceStockConsumptionService invoiceStockConsumptionService, CustomerRepository customerRepository) {
         this.invoiceItemMapper = invoiceItemMapper;
         this.customExceptionHandler = customExceptionHandler;
         this.invoiceItemRepository = invoiceItemRepository;
@@ -55,6 +54,7 @@ public class InvoiceItemService {
         this.productService = productService;
         this.productMapper = productMapper;
         this.iscService = invoiceStockConsumptionService;
+        this.customerRepository = customerRepository;
     }
     public ResponseEntity<?> getAllInvoiceItems() {
         List<InvoiceItem> invoiceItems = invoiceItemRepository.findAll();
@@ -190,7 +190,10 @@ public class InvoiceItemService {
         }
 
          invoice.setTotal( invoiceItemRepository.getTotalByInvoice(invoice.getId()));
-
+        if(saleInvoiceDto.invoice().customerId() != null){
+            Customer customer = customerRepository.findById(saleInvoiceDto.invoice().customerId()).orElse(null);
+            invoice.setCustomer(customer);
+        }
          invoiceRepository.save(invoice);
 
 
@@ -338,7 +341,9 @@ public class InvoiceItemService {
             errors.add("Cost price must be greater than 0");
         }
         if (invoiceItemDto.amount() <= 0) {
-            errors.add("Amount must be greater than 0");
+            if(!type.equals("return")) {
+                errors.add("Amount must be greater than 0");
+            }
         }
         if (invoiceItemDto.quantity() <= 0) {
             if(!type.equals("return") || !(invoiceItemDto.quantity() == 0)) {
@@ -350,9 +355,6 @@ public class InvoiceItemService {
         }
         if (invoiceItemDto.costPrice() <= 0) {
             errors.add("Cost price must be greater than 0");
-        }
-        if (invoiceItemDto.amount() <= 0) {
-            errors.add("Amount must be greater than 0");
         }
 
 
