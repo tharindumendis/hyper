@@ -9,6 +9,7 @@ import com.pos.hyper.model.product.ProductStockDto;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/product")
-@CrossOrigin(origins = "*")
 //@CrossOrigin(origins = "http://localhost:5173") // we can set the origin here for access this controller api(Tharindu Mendis)
 public class ProductController {
 
@@ -34,11 +34,12 @@ public class ProductController {
     public ResponseEntity<?> getAllProducts() {
         return productService.getAllProducts();
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/stock")
     public ResponseEntity<?> getAllProductsStock() {
         return productService.getProductStock();
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/stock/{id}")
     public ResponseEntity<?> getProductStockById(@PathVariable Integer id) {
         return productService.getProductStockById(id);
