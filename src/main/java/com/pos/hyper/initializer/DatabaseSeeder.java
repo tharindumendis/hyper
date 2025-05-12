@@ -1,19 +1,19 @@
 package com.pos.hyper.initializer;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.Organization;
 import com.pos.hyper.model.Role;
 import com.pos.hyper.model.category.Category;
 import com.pos.hyper.model.customer.Customer;
 import com.pos.hyper.model.supplier.Supplier;
 import com.pos.hyper.model.user.User;
-import com.pos.hyper.repository.CategoryRepository;
-import com.pos.hyper.repository.CustomerRepository;
-import com.pos.hyper.repository.SupplierRepository;
-import com.pos.hyper.repository.UserRepository;
+import com.pos.hyper.repository.*;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Component
 public class DatabaseSeeder {
@@ -22,13 +22,15 @@ public class DatabaseSeeder {
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final SupplierRepository supplierRepository;
+    private final OrgRepository orgRepository;
 
 
-    public DatabaseSeeder(CategoryRepository categoryRepository, CustomerRepository customerRepository, UserRepository userRepository, SupplierRepository supplierRepository) {
+    public DatabaseSeeder(CategoryRepository categoryRepository, CustomerRepository customerRepository, UserRepository userRepository, SupplierRepository supplierRepository, OrgRepository orgRepository) {
         this.categoryRepository = categoryRepository;
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.supplierRepository = supplierRepository;
+        this.orgRepository = orgRepository;
     }
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
@@ -37,6 +39,7 @@ public class DatabaseSeeder {
         seedCategories();
         seedSuppliers();
         seedCustomers();
+        seedOrg();
         System.out.println("Database seeding completed!");
     }
 
@@ -51,6 +54,7 @@ public class DatabaseSeeder {
             admin.setRole(Role.ADMIN);
             admin.setEmail("admin@hyper.com");
             admin.setPhone("0000000000");
+            admin.setCreatedAt(LocalDateTime.now());
             userRepository.save(admin);
             System.out.println("Admin user initialized.");
         }
@@ -59,6 +63,7 @@ public class DatabaseSeeder {
         if (categoryRepository.findById(1).isEmpty()) {
             Category category = new Category();
             category.setName("None");
+            category.setCreatedAt(LocalDateTime.now());
             categoryRepository.save(category);
             System.out.println("Category initialized.");
         }
@@ -81,9 +86,23 @@ public class DatabaseSeeder {
             customer.setPhone("1234567890");
             customer.setAddress("noAddress");
             customer.setEmail("nomail@mail.com");
+            customer.setCreatedAt(LocalDateTime.now());
             customerRepository.save(customer);
             System.out.println("Customer initialized.");
         }
     }
-
+    private void seedOrg() {
+        if (orgRepository.findById(1).isEmpty()) {
+            Organization org = new Organization();
+            org.setName("My Store");
+            org.setEmail("store@email.com");
+            org.setPhone("1234567890");
+            org.setAddress("noAddress");
+            org.setEmployeeCount(1);
+            org.setIsActive(true);
+            org.setCreatedAt(LocalDateTime.now());
+            orgRepository.save(org);
+            System.out.println("Org initialized.");
+        }
+    }
 }
