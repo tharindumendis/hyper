@@ -23,18 +23,17 @@ public class CategoryController {
         this.categoryService = categoryService;
         this.customExceptionHandler = customExceptionHandler;
     }
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("")
     public ResponseEntity<?> getAllCategories() {
         return categoryService.getAllCategories();
     }
     @GetMapping("/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable Integer id) {
-        return ResponseEntity.ok(categoryService.getCategoryById(id));
+        return categoryService.getCategoryById(id);
     }
     @PostMapping("")
     public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
-        return ResponseEntity.ok(categoryService.createCategory(categoryDto));
+        return categoryService.createCategory(categoryDto);
     }
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable Integer id,@Valid @RequestBody CategoryDto categoryDto) {

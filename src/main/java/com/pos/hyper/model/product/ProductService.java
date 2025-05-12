@@ -46,6 +46,20 @@ public class ProductService {
         }
         return ResponseEntity.ok(productMapper.toProductDto(product));
     }
+    public ResponseEntity<?> getProductByIdForBill(Integer id){
+        Product product = productRepository.findById(id).orElse(null);
+        if(product == null){
+            return customExceptionHandler.notFoundException("Product with id " + id + " not found");
+        }
+        product.setPrice(null);
+        product.setCreatedAt(null);
+        product.setUpdatedAt(null);
+        product.setBarcode(null);
+        product.setDescription(null);
+        product.setDiscount(null);
+        product.setImage(null);
+        return ResponseEntity.ok(productMapper.toProductBillDto(product));
+    }
     public ResponseEntity<?> createProduct(ProductDto productDto, MultipartFile file) {
         ResponseEntity<?> rs =validateProduct(productDto,"create");
         if(rs != null){

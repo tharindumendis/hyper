@@ -1,5 +1,6 @@
 package com.pos.hyper.model.product;
 
+import com.pos.hyper.DTO.ProductBillDto;
 import com.pos.hyper.DTO.ProductDto;
 import com.pos.hyper.model.Unitt;
 import com.pos.hyper.model.category.Category;
@@ -11,6 +12,20 @@ public class ProductMapper {
 
     public ProductDto toProductDto(Product product) {
         return new ProductDto(
+                product.getId(),
+                product.getBarcode(),
+                product.getName(),
+                product.getCategory().getId(),
+                product.getUnit(),
+                product.getDescription(),
+                product.getImage(),
+                product.getDiscount(),
+                product.getPrice(),
+                product.getIsActive()
+        );
+    }
+    public ProductBillDto toProductBillDto(Product product) {
+        return new ProductBillDto(
                 product.getId(),
                 product.getBarcode(),
                 product.getName(),

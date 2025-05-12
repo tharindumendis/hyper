@@ -1,6 +1,7 @@
 package com.pos.hyper.controller;
 
 import com.pos.hyper.Security.JWTUtil;
+import com.pos.hyper.model.Organization;
 import com.pos.hyper.model.Role;
 import com.pos.hyper.model.user.User;
 import com.pos.hyper.model.user.UserDto;
@@ -8,6 +9,7 @@ import com.pos.hyper.model.user.UserMapper;
 import com.pos.hyper.payload.JWTResponse;
 import com.pos.hyper.payload.LoginRequest;
 import com.pos.hyper.payload.MessageResponse;
+import com.pos.hyper.repository.OrgRepository;
 import com.pos.hyper.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,9 @@ public class AuthController {
     @Autowired
     JWTUtil jwtUtil;
 
+    @Autowired
+    OrgRepository orgRepository;
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -55,6 +60,9 @@ public class AuthController {
         List<String> roles = userdetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
+        if (!userdetails.isActive()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("User is not active"));
+        }
         return ResponseEntity.ok(new JWTResponse(
                 jwt,
                 userdetails.getId(),
@@ -66,6 +74,10 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser (@Valid @RequestBody UserDto userDto){
+        Integer eLimit = orgRepository.findAll().getFirst().getEmployeeCount();
+        if(userRepository.count() >= eLimit){
+            return ResponseEntity.badRequest().body("Employee limit reached");
+        }
         if(userRepository.existsByUsername(userDto.username())){
             return ResponseEntity.badRequest().body("Username is already in use");
         }

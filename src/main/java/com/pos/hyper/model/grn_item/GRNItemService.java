@@ -97,7 +97,7 @@ public class GRNItemService {
             item.setProduct(product);
             item.setQuantity(dto.quantity());
             item.setGrn(grn);
-            item.setDiscount(product.getDiscount());
+            item.setDiscount(dto.discount());
             item.setUnitCost(dto.unitCost());
             if (item.getDiscount() == 0) {
                 item.setAmount(dto.unitCost() * dto.quantity());

@@ -12,7 +12,9 @@ public class UserMapper {
                 user.getEmail(),
                 user.getPassword(),
                 user.getRole(),
-                user.isActive()
+                user.isActive(),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
         );
     }
     public User toUser(UserDto userDto) {
@@ -23,6 +25,8 @@ public class UserMapper {
         user.setPassword(userDto.password());
         user.setRole(userDto.role());
         user.setActive(userDto.isActive() != null ? userDto.isActive() : false);
+        user.setCreatedAt(userDto.createdAt());
+        user.setUpdatedAt(userDto.updatedAt());
         return user;
     }
     public User toUser(UserDto userDto, User user) {
@@ -32,6 +36,8 @@ public class UserMapper {
         user.setPassword(userDto.password() == null ? user.getPassword() : userDto.password());
         user.setRole(userDto.role());
         user.setActive(userDto.isActive() != null ? userDto.isActive() : false);
+        user.setCreatedAt(userDto.createdAt());
+        user.setUpdatedAt(userDto.updatedAt());
         return user;
     }
 }
