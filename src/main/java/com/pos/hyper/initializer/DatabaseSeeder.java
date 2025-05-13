@@ -98,7 +98,7 @@ public class DatabaseSeeder {
             org.setEmail("store@email.com");
             org.setPhone("1234567890");
             org.setAddress("noAddress");
-            org.setEmployeeCount(1);
+            org.setEmployeeCount(3);
             org.setIsActive(true);
             org.setCreatedAt(LocalDateTime.now());
             orgRepository.save(org);
