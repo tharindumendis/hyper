@@ -6,6 +6,7 @@ import com.pos.hyper.model.grn.GRNService;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,7 @@ public class GrnController {
         this.customExceptionHandler = customExceptionHandler;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("")
     public ResponseEntity<?> getAllGRNs() {
         return grnService.getAllGRNs();

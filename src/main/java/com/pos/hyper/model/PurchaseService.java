@@ -64,4 +64,14 @@ public class PurchaseService {
         }
         return ResponseEntity.ok(grnItemService.updateGRNItems( sIDto.items()));
     }
+
+    public ResponseEntity<?> getPurchaseById(Integer id) {
+        return ResponseEntity.ok(grnRepository.findById(id)
+                .map(
+                        GRN -> new PurchaseDto(
+                                grnMapper.toGRNDto(GRN),
+                                grnItemRepository.findAllByGrn_Id(GRN.getId()).stream().map(grnItemMapper::toGRNItemDto).toList()
+                        )
+                ).orElseThrow(() -> customExceptionHandler.handleNotFoundException("Purchase not found with id: " + id)));
+    }
 }
