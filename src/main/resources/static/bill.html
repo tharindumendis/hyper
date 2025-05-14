@@ -292,7 +292,7 @@
     });
 
     async function fetchInvoiceData(invoiceId, customerId) {
-        const url = `http://localhost:8080/bill/sale/${invoiceId}?customer=${customerId}`;
+        const url = `http://152.67.176.77:8080/bill/sale/${invoiceId}?customer=${customerId}`;
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -304,7 +304,7 @@
     }
 
     async function fetchProductDetails(productId, customerId, invoiceId) {
-        const url = `http://localhost:8080/bill/product/${productId}?customer=${customerId}&invoice=${invoiceId}`;
+        const url = `http://152.67.176.77:8080/bill/product/${productId}?customer=${customerId}&invoice=${invoiceId}`;
         const response = await fetch(url);
 
         if (!response.ok) {
