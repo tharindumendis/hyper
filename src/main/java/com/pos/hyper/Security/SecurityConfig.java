@@ -7,14 +7,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -56,66 +54,33 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(List.of("*"));
-//        configuration.setAllowCredentials(true);
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//
-//        CorsConfiguration openConfig = new CorsConfiguration();
-//        openConfig.setAllowedOrigins(List.of("*"));
-//        openConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        openConfig.setAllowedHeaders(List.of("*"));
-//        openConfig.setAllowCredentials(false);
-//        source.registerCorsConfiguration("/bill.html", openConfig);
-//        source.registerCorsConfiguration("/bill/**", openConfig);
-//        source.registerCorsConfiguration("/bill.html/**", openConfig);
-//
-//        return source;
-//    }
-@Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    // Default configuration for most endpoints
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("*"));
-    configuration.setAllowCredentials(true);
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
+        CorsConfiguration openConfig = new CorsConfiguration();
+        openConfig.setAllowedOrigins(List.of("*"));
+        openConfig.setAllowedMethods(List.of("GET"));
+        openConfig.setAllowedHeaders(List.of("*"));
+        openConfig.setAllowCredentials(false);
+        source.registerCorsConfiguration("/bill.html", openConfig);
+        source.registerCorsConfiguration("/bill/**", openConfig);
 
-    // Option 1: If credentials are NOT needed for bill endpoints
-    CorsConfiguration openConfig = new CorsConfiguration();
-    openConfig.setAllowedOrigins(List.of("*"));
-    openConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    openConfig.setAllowedHeaders(List.of("*"));
-    openConfig.setAllowCredentials(false);
+        openConfig.setAllowedOrigins(List.of("*"));
+        openConfig.setAllowedMethods(List.of("GET"));
+        openConfig.setAllowedHeaders(List.of("*"));
+        openConfig.setAllowCredentials(false);
+        source.registerCorsConfiguration("/api/image/**", openConfig);
+        source.registerCorsConfiguration("/documentation", openConfig);
 
-    // Option 2: If credentials ARE needed for bill endpoints (uncomment this block and comment out Option 1)
-    /*
-    CorsConfiguration openConfig = new CorsConfiguration();
-    // Specify explicit origins instead of using wildcard
-    openConfig.setAllowedOrigins(List.of("http://example.com", "https://example.com", "http://localhost:5173"));
-    openConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    openConfig.setAllowedHeaders(List.of("*"));
-    openConfig.setAllowCredentials(true);
-    */
-
-    // Apply the configuration to bill endpoints
-    source.registerCorsConfiguration("/bill.html", openConfig);
-    source.registerCorsConfiguration("/bill/**", openConfig);
-    source.registerCorsConfiguration("/bill.html/**", openConfig);
-
-    return source;
-}
-
-
-
+        return source;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -130,7 +95,7 @@ public CorsConfigurationSource corsConfigurationSource() {
                         auth.requestMatchers("/api/test/**").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/bill.html").permitAll()
-                                .requestMatchers("api/bill/**").permitAll()
+                                .requestMatchers("/bill/**").permitAll()
                                 .requestMatchers("/documentation").permitAll()
                                 .requestMatchers("/api/image/**").permitAll()
                                 .anyRequest().authenticated()
