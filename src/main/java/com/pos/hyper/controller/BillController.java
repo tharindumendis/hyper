@@ -45,11 +45,11 @@ public class BillController {
             System.out.println("Invoice : " + theInvoice.getCustomer().getId() +  "invoice id = " + theInvoice.getId());
             throw new RuntimeException("Invoice not found with customer id " + cId);
         }
-        List<InvoiceItem> invoiceItems = invoiceItemRepository.findAllByInvoiceId(id);
-        List<Integer> productIds = invoiceItems.stream().map(InvoiceItem::getProduct).map(product -> product.getId()).toList();
-        if (!productIds.contains(id)) {
-            throw new RuntimeException("Product not found");
-        }
+//        List<InvoiceItem> invoiceItems = invoiceItemRepository.findAllByInvoiceId(id);
+//        List<Integer> productIds = invoiceItems.stream().map(InvoiceItem::getProduct).map(product -> product.getId()).toList();
+//        if (!productIds.contains(id)) {
+//            throw new RuntimeException("Product not found");
+//        }
         return productService.getProductByIdForBill(id);
     }
 
