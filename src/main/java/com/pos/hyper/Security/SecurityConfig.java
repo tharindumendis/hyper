@@ -56,66 +56,31 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(List.of("*"));
-//        configuration.setAllowCredentials(true);
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//
-//        CorsConfiguration openConfig = new CorsConfiguration();
-//        openConfig.setAllowedOrigins(List.of("*"));
-//        openConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//        openConfig.setAllowedHeaders(List.of("*"));
-//        openConfig.setAllowCredentials(false);
-//        source.registerCorsConfiguration("/bill.html", openConfig);
-//        source.registerCorsConfiguration("/bill/**", openConfig);
-//        source.registerCorsConfiguration("/bill.html/**", openConfig);
-//
-//        return source;
-//    }
-@Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    // Default configuration for most endpoints
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("*"));
-    configuration.setAllowCredentials(true);
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-    // Option 1: If credentials are NOT needed for bill endpoints
-    CorsConfiguration openConfig = new CorsConfiguration();
-    openConfig.setAllowedOrigins(List.of("*"));
-    openConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    openConfig.setAllowedHeaders(List.of("*"));
-    openConfig.setAllowCredentials(false);
+        CorsConfiguration openConfig = new CorsConfiguration();
+        openConfig.setAllowedOrigins(List.of("*"));
+        openConfig.setAllowedMethods(List.of("GET"));
+        openConfig.setAllowedHeaders(List.of("*"));
+        openConfig.setAllowCredentials(false);
 
-    // Option 2: If credentials ARE needed for bill endpoints (uncomment this block and comment out Option 1)
-    /*
-    CorsConfiguration openConfig = new CorsConfiguration();
-    // Specify explicit origins instead of using wildcard
-    openConfig.setAllowedOrigins(List.of("http://example.com", "https://example.com", "http://localhost:5173"));
-    openConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    openConfig.setAllowedHeaders(List.of("*"));
-    openConfig.setAllowCredentials(true);
-    */
+        source.registerCorsConfiguration("/bill.html", openConfig);
+        source.registerCorsConfiguration("/bill/**", openConfig);
+        source.registerCorsConfiguration("/bill.html/**", openConfig);
+        source.registerCorsConfiguration("/api/image/", openConfig);
+        source.registerCorsConfiguration("/documentation", openConfig);
 
-    // Apply the configuration to bill endpoints
-    source.registerCorsConfiguration("/bill.html", openConfig);
-    source.registerCorsConfiguration("/bill/**", openConfig);
-    source.registerCorsConfiguration("/bill.html/**", openConfig);
-
-    return source;
-}
-
-
-
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -130,7 +95,8 @@ public CorsConfigurationSource corsConfigurationSource() {
                         auth.requestMatchers("/api/test/**").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/bill.html").permitAll()
-                                .requestMatchers("api/bill/**").permitAll()
+                                .requestMatchers("/bill/**").permitAll()
+                                .requestMatchers("/bill.html/**").permitAll()
                                 .requestMatchers("/documentation").permitAll()
                                 .requestMatchers("/api/image/**").permitAll()
                                 .anyRequest().authenticated()
