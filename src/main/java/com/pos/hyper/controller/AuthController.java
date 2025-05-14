@@ -30,6 +30,9 @@ import java.util.stream.Collectors;
 public class AuthController {
 
     @Autowired
+    NotificationController notificationController;
+
+    @Autowired
     AuthenticationManager authenticationManager;
 
     @Autowired
@@ -49,6 +52,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+
+        notificationController.sendNotification("Login", "User " + loginRequest.getUsername() + " logged in");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword())
         );

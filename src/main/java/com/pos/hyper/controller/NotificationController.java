@@ -9,7 +9,7 @@ public class NotificationController {
 
     @MessageMapping("/notify")
     @SendTo("/topic/notifications")
-    public String sendNotification(String message) {
+    public String sendNotification(String message, String s) {
         return "New Notification: " + message;
     }
 
