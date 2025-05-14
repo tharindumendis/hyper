@@ -65,8 +65,6 @@ public class UserService {
     }
 
     public ResponseEntity<?> activateUser(Integer id, Boolean isActive, String userDetails){
-        System.out.println(userDetails.toString() +" ####" + id+"####" + isActive.toString());
-
         User user = userRepository.findById(id)
                 .orElseThrow(()-> customExceptionHandler
                         .handleNotFoundException("User with id " + id + " not found"));
