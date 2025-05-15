@@ -58,19 +58,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
       
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173","https://hyperpospack.netlify.app"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
-        CorsConfiguration configurationnetlyfy = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://hyperpospack.netlify.app"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-        source.registerCorsConfiguration("/**", configurationnetlyfy);
 
         CorsConfiguration openConfig = new CorsConfiguration();
         openConfig.setAllowedOrigins(List.of("*"));
