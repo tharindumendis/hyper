@@ -56,6 +56,7 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+      
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -72,13 +73,13 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/bill.html", openConfig);
         source.registerCorsConfiguration("/bill/**", openConfig);
 
-        openConfig.setAllowedOrigins(List.of("*"));
-        openConfig.setAllowedMethods(List.of("GET"));
-        openConfig.setAllowedHeaders(List.of("*"));
-        openConfig.setAllowCredentials(false);
-        source.registerCorsConfiguration("/api/image/**", openConfig);
+        source.registerCorsConfiguration("/bill.html", openConfig);
+        source.registerCorsConfiguration("/bill/**", openConfig);
+        source.registerCorsConfiguration("/bill.html/**", openConfig);
+        source.registerCorsConfiguration("/api/image/", openConfig);
         source.registerCorsConfiguration("/documentation", openConfig);
 
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
@@ -96,6 +97,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/bill.html").permitAll()
                                 .requestMatchers("/bill/**").permitAll()
+                                .requestMatchers("/bill.html/**").permitAll()
                                 .requestMatchers("/documentation").permitAll()
                                 .requestMatchers("/api/image/**").permitAll()
                                 .anyRequest().authenticated()
