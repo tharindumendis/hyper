@@ -66,7 +66,7 @@ public class SecurityConfig {
 
         CorsConfiguration openConfig = new CorsConfiguration();
         openConfig.setAllowedOrigins(List.of("*"));
-        openConfig.setAllowedMethods(List.of("GET"));
+        openConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "OPTIONS"));
         openConfig.setAllowedHeaders(List.of("*"));
         openConfig.setAllowCredentials(false);
         source.registerCorsConfiguration("/bill.html", openConfig);
