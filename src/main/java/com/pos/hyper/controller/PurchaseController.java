@@ -43,7 +43,7 @@ public class PurchaseController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStock(@PathVariable Integer id, @RequestBody PurchaseDto sIDto) {
+    public ResponseEntity<?> returnPurchase(@PathVariable Integer id, @RequestBody PurchaseDto sIDto) {
         return purchaseService.returnPurchase(id, sIDto);
     }
 

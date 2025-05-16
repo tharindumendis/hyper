@@ -76,9 +76,8 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/bill/**", openConfig);
         source.registerCorsConfiguration("/bill.html/**", openConfig);
         source.registerCorsConfiguration("/api/image/", openConfig);
-        source.registerCorsConfiguration("/documentation", openConfig);
+        source.registerCorsConfiguration("/", openConfig);
 
-        //source.registerCorsConfiguration("/**", openConfig);
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

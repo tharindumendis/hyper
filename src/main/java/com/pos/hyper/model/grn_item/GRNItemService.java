@@ -158,7 +158,7 @@ public class GRNItemService {
             }
             Stock stock = stockService.findByGrnItemId(oldGRNItem.getId());
             Double oldQty = oldGRNItem.getQuantity();
-            Double newQty = dto.quantity();
+            Double newQty = oldQty-dto.quantity() < 0 ? 0 : oldQty - dto.quantity();
             if (!Objects.equals(newQty, oldQty)) {
 
                 stock.setQuantity(newQty);

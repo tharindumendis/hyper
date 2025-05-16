@@ -245,16 +245,16 @@ public class InvoiceItemService {
 
             // Calculate the discounted price
             if (invoiceItem.getDiscount() == 0 ) {
-                invoiceItem.setAmount(invoiceItem.getUnitPrice() * dto.quantity());
+                invoiceItem.setAmount(invoiceItem.getUnitPrice() * invoiceItem.getQuantity()-dto.quantity());
             }else{
-                invoiceItem.setAmount((invoiceItem.getUnitPrice() * dto.quantity()) * (100 - invoiceItem.discount) / 100);
+                invoiceItem.setAmount((invoiceItem.getUnitPrice() * invoiceItem.getQuantity()-dto.quantity()) * (100 - invoiceItem.discount) / 100);
             }
 
             // Update stock in-memory
-            stockService.updateStockForInvoiceReturn(product.id(), invoiceItem.getId(),invoiceItem.getQuantity()-dto.quantity() );
+            stockService.updateStockForInvoiceReturn(product.id(), invoiceItem.getId(),dto.quantity() );
 
             // Update invoice item
-            invoiceItem.setQuantity(dto.quantity());
+            invoiceItem.setQuantity(invoiceItem.getQuantity()-dto.quantity());
 
             invoiceItems.add(invoiceItem);
 
@@ -325,9 +325,7 @@ public class InvoiceItemService {
 
     private void validateInvoiceItem(InvoiceItemDto invoiceItemDto, Double availableQty, Double invoiceItemQuantity, String type) {
         List<String> errors = new ArrayList<>();
-        if (invoiceItemDto.quantity() > availableQty) {
-            errors.add("Quantity must be less than or equal to product quantity");
-        }
+
         if (invoiceItemDto.quantity() > invoiceItemQuantity) {
             errors.add("Quantity must be less than or equal to invoiceItem quantity");
         }
@@ -337,24 +335,13 @@ public class InvoiceItemService {
         if (invoiceItemDto.discount() < 0) {
             errors.add("Discount must be greater than or equal to 0");
         }
-        if (invoiceItemDto.costPrice() <= 0) {
-            errors.add("Cost price must be greater than 0");
-        }
-        if (invoiceItemDto.amount() <= 0) {
-            if(!type.equals("return")) {
-                errors.add("Amount must be greater than 0");
-            }
-        }
-        if (invoiceItemDto.quantity() <= 0) {
-            if(!type.equals("return") || !(invoiceItemDto.quantity() == 0)) {
-                errors.add("Quantity must be greater than 0");
-            }
+
+        if (invoiceItemDto.quantity() < 0) {
+                errors.add("Return Quantity must be greater than or equal to 0");
+
         }
         if (invoiceItemDto.discount() < 0 || invoiceItemDto.discount() > 100 ) {
             errors.add("Discount must be between 0 and 100");
-        }
-        if (invoiceItemDto.costPrice() <= 0) {
-            errors.add("Cost price must be greater than 0");
         }
 
 
