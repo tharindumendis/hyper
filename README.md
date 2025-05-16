@@ -50,10 +50,10 @@ spring.datasource.password=yourpassword
 mvn clean install
 mvn spring-boot:run
 
-4️⃣ Access the application at 👉 http://localhost:8080
+4️⃣ Access the application at 👉 http://localhost:8080/api/**
 
 📜 API Documentation
 
 API documentation can be accessed via Swagger UI:
 
-http://localhost:8080
+http://localhost:8080/documentation
