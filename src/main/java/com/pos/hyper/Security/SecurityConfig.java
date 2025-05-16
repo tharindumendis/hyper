@@ -58,7 +58,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
       
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://hyperpospack.netlify.app","http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://hyperposfrontend.vercel.app","http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -66,7 +66,7 @@ public class SecurityConfig {
 
         CorsConfiguration openConfig = new CorsConfiguration();
         openConfig.setAllowedOrigins(List.of("*"));
-        openConfig.setAllowedMethods(List.of("GET"));
+        openConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "OPTIONS"));
         openConfig.setAllowedHeaders(List.of("*"));
         openConfig.setAllowCredentials(false);
         source.registerCorsConfiguration("/bill.html", openConfig);
@@ -78,7 +78,8 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/api/image/", openConfig);
         source.registerCorsConfiguration("/documentation", openConfig);
 
-        source.registerCorsConfiguration("/**", openConfig);
+        //source.registerCorsConfiguration("/**", openConfig);
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
