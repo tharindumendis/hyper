@@ -5,6 +5,7 @@ import com.pos.hyper.DTO.OrgDto;
 import com.pos.hyper.service.OrgService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +22,17 @@ public class OrgController {
         this.exceptionHandler = exceptionHandler;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("")
     public ResponseEntity<?> getOrg(){
         return orgService.getOrg();
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("")
     public ResponseEntity<?> createOrg(@Valid @RequestBody OrgDto orgDto){
         return orgService.createOrg(orgDto);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("")
     public ResponseEntity<?> updateOrg(@Valid @RequestBody OrgDto orgDto){
         return orgService.updateOrg(orgDto);
