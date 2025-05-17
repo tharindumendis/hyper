@@ -69,15 +69,13 @@ public class SecurityConfig {
         openConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "OPTIONS"));
         openConfig.setAllowedHeaders(List.of("*"));
         openConfig.setAllowCredentials(false);
-        source.registerCorsConfiguration("/bill.html", openConfig);
-        source.registerCorsConfiguration("/bill/**", openConfig);
 
         source.registerCorsConfiguration("/bill.html", openConfig);
         source.registerCorsConfiguration("/bill/**", openConfig);
         source.registerCorsConfiguration("/bill.html/**", openConfig);
         source.registerCorsConfiguration("/api/image/", openConfig);
+        source.registerCorsConfiguration("/docs", openConfig);
         source.registerCorsConfiguration("/", openConfig);
-
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
@@ -97,7 +95,8 @@ public class SecurityConfig {
                                 .requestMatchers("/bill.html").permitAll()
                                 .requestMatchers("/bill/**").permitAll()
                                 .requestMatchers("/bill.html/**").permitAll()
-                                .requestMatchers("/documentation").permitAll()
+                                .requestMatchers("/docs").permitAll()
+                                .requestMatchers("/").permitAll()
                                 .requestMatchers("/api/image/**").permitAll()
                                 .anyRequest().authenticated()
                 );

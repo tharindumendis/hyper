@@ -3,7 +3,7 @@ package com.pos.hyper.model.file;
 import com.pos.hyper.DTO.ProductDto;
 import com.pos.hyper.model.product.Product;
 import com.pos.hyper.model.product.ProductMapper;
-import com.pos.hyper.model.product.ProductService;
+import com.pos.hyper.service.ProductService;
 import com.pos.hyper.repository.ProductRepository;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

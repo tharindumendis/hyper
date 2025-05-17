@@ -1,10 +1,11 @@
-package com.pos.hyper.model.product;
+package com.pos.hyper.service;
 
 import com.pos.hyper.DTO.ProductDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.product.Product;
+import com.pos.hyper.model.product.ProductMapper;
 import com.pos.hyper.repository.CategoryRepository;
 import com.pos.hyper.repository.ProductRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 

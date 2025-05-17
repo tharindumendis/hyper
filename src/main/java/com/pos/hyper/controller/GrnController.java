@@ -2,15 +2,13 @@ package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.DTO.GRNDto;
-import com.pos.hyper.model.grn.GRNService;
+import com.pos.hyper.service.GRNService;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/grn")

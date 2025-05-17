@@ -1,5 +1,6 @@
-package com.pos.hyper.model;
+package com.pos.hyper.model.org;
 
+import com.pos.hyper.DTO.OrgDto;
 import org.springframework.stereotype.Service;
 
 @Service

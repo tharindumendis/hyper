@@ -1,7 +1,6 @@
 package com.pos.hyper.initializer;
 
-import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.Organization;
+import com.pos.hyper.model.org.Organization;
 import com.pos.hyper.model.Role;
 import com.pos.hyper.model.category.Category;
 import com.pos.hyper.model.customer.Customer;

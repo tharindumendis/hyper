@@ -1,10 +1,10 @@
-package com.pos.hyper.model.category;
+package com.pos.hyper.service;
 
 import com.pos.hyper.DTO.CategoryDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.exception.NotFoundException;
+import com.pos.hyper.model.category.Category;
+import com.pos.hyper.model.category.CategoryMapper;
 import com.pos.hyper.repository.CategoryRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

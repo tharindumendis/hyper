@@ -5,13 +5,12 @@ import com.pos.hyper.model.invoice.Invoice;
 import com.pos.hyper.model.invoice.InvoiceMapper;
 import com.pos.hyper.model.invoice_item.InvoiceItem;
 import com.pos.hyper.model.invoice_item.InvoiceItemMapper;
-import com.pos.hyper.model.product.ProductService;
+import com.pos.hyper.service.ProductService;
 import com.pos.hyper.repository.InvoiceItemRepository;
 import com.pos.hyper.repository.InvoiceRepository;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
 import java.util.Objects;
