@@ -58,7 +58,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
       
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://hyperposfrontend.vercel.app","http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000",
+                "https://hyperposfrontend.vercel.app",
+                "http://localhost:5173",
+                "http://152.67.176.77:8443"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
