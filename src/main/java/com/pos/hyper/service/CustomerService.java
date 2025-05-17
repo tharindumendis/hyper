@@ -1,7 +1,9 @@
-package com.pos.hyper.model.customer;
+package com.pos.hyper.service;
 
 import com.pos.hyper.DTO.CustomerDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.customer.Customer;
+import com.pos.hyper.model.customer.CustomerMapper;
 import com.pos.hyper.repository.CustomerRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

@@ -1,10 +1,11 @@
-package com.pos.hyper.model.grn_item;
+package com.pos.hyper.service;
 
 import com.pos.hyper.DTO.GRNItemDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.model.Stock.Stock;
 import com.pos.hyper.DTO.PurchaseDto;
-import com.pos.hyper.model.Stock.StockService;
+import com.pos.hyper.model.grn_item.GRNItem;
+import com.pos.hyper.model.grn_item.GRNItemMapper;
 import com.pos.hyper.model.grn.GRN;
 import com.pos.hyper.model.grn.GRNMapper;
 import com.pos.hyper.model.product.Product;

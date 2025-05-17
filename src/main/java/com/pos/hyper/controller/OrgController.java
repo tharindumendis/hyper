@@ -1,8 +1,8 @@
 package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
-import com.pos.hyper.model.OrgDto;
-import com.pos.hyper.model.OrgService;
+import com.pos.hyper.DTO.OrgDto;
+import com.pos.hyper.service.OrgService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;

@@ -1,7 +1,9 @@
-package com.pos.hyper.model.Stock;
+package com.pos.hyper.service;
 
 import com.pos.hyper.DTO.StockDto;
 import com.pos.hyper.exception.CustomExceptionHandler;
+import com.pos.hyper.model.Stock.Stock;
+import com.pos.hyper.model.Stock.StockMapper;
 import com.pos.hyper.model.invoiceStockConsumption.InvoiceStockConsumption;
 import com.pos.hyper.repository.InvoiceStockConsumptionRepository;
 import com.pos.hyper.repository.StockRepository;

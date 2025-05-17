@@ -1,5 +1,6 @@
-package com.pos.hyper.model.invoiceStockConsumption;
+package com.pos.hyper.Security;
 
+import com.pos.hyper.model.invoiceStockConsumption.InvoiceStockConsumption;
 import com.pos.hyper.repository.InvoiceStockConsumptionRepository;
 import org.springframework.stereotype.Service;
 

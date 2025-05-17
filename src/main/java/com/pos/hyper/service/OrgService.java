@@ -1,5 +1,8 @@
-package com.pos.hyper.model;
+package com.pos.hyper.service;
 
+import com.pos.hyper.DTO.OrgDto;
+import com.pos.hyper.model.org.OrgMapper;
+import com.pos.hyper.model.org.Organization;
 import com.pos.hyper.repository.OrgRepository;
 import com.pos.hyper.repository.UserRepository;
 import org.springframework.http.ResponseEntity;

@@ -1,15 +1,11 @@
-package com.pos.hyper.model;
+package com.pos.hyper.model.org;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.pos.hyper.model.BaseEntity;
-import com.pos.hyper.model.invoice.Invoice;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.relational.core.sql.In;
 
-import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor

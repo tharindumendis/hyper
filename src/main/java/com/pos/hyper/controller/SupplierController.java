@@ -2,13 +2,11 @@ package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.DTO.SupplierDto;
-import com.pos.hyper.model.supplier.SupplierService;
+import com.pos.hyper.service.SupplierService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/supplier")

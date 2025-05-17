@@ -1,4 +1,4 @@
-package com.pos.hyper.model;
+package com.pos.hyper.DTO;
 
 public record OrgDto(
         String name,

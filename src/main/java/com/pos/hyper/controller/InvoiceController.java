@@ -2,12 +2,10 @@ package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.DTO.InvoiceDto;
-import com.pos.hyper.model.invoice.InvoiceService;
+import com.pos.hyper.service.InvoiceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/invoice")

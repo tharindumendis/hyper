@@ -1,7 +1,6 @@
 package com.pos.hyper.controller;
 
 import com.pos.hyper.Security.JWTUtil;
-import com.pos.hyper.model.Organization;
 import com.pos.hyper.model.Role;
 import com.pos.hyper.model.user.User;
 import com.pos.hyper.model.user.UserDto;

@@ -3,13 +3,11 @@ package com.pos.hyper.controller;
 
 import com.pos.hyper.exception.CustomExceptionHandler;
 import com.pos.hyper.DTO.CustomerDto;
-import com.pos.hyper.model.customer.CustomerService;
+import com.pos.hyper.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/customer")
