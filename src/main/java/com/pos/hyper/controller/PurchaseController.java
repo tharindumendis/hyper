@@ -34,6 +34,7 @@ public class PurchaseController {
         return purchaseService.createPurchase(sIDto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity <?> getPurchaseById(@PathVariable Integer id) {
         return purchaseService.getPurchaseById(id);

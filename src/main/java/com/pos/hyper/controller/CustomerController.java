@@ -6,6 +6,7 @@ import com.pos.hyper.DTO.CustomerDto;
 import com.pos.hyper.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,26 +23,31 @@ public class CustomerController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @GetMapping("")
     public ResponseEntity<?> findAll(){
         return customerService.getAllCustomers();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Integer id) {
         return customerService.getCustomerById(id);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @PostMapping("")
     public ResponseEntity<?> save(@Valid @RequestBody CustomerDto customerDto) {
         return customerService.createCustomer(customerDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@Valid @RequestBody CustomerDto customerDto, @PathVariable Integer id) {
         return customerService.updateCustomer(id, customerDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         customerService.deleteCustomer(id);

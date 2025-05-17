@@ -20,22 +20,27 @@ public class CategoryController {
         this.categoryService = categoryService;
         this.customExceptionHandler = customExceptionHandler;
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @GetMapping("")
     public ResponseEntity<?> getAllCategories() {
         return categoryService.getAllCategories();
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getCategoryById(@PathVariable Integer id) {
         return categoryService.getCategoryById(id);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("")
     public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
         return categoryService.createCategory(categoryDto);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable Integer id,@Valid @RequestBody CategoryDto categoryDto) {
         return categoryService.updateCategory(id, categoryDto);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
