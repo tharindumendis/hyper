@@ -61,7 +61,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of("http://localhost:3000",
                 "https://hyperposfrontend.vercel.app",
                 "http://localhost:5173",
-                "http://152.67.176.77:8443"
+                "https://152.67.176.77/"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
