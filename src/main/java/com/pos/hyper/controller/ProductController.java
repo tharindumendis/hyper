@@ -26,25 +26,30 @@ public class ProductController {
         this.customExceptionHandler = customExceptionHandler;
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     @GetMapping("")
     public ResponseEntity<?> getAllProducts() {
         return productService.getAllProducts();
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     @GetMapping("/stock")
     public ResponseEntity<?> getAllProductsStock() {
         return productService.getProductStock();
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     @GetMapping("/stock/{id}")
     public ResponseEntity<?> getProductStockById(@PathVariable Integer id) {
         return productService.getProductStockById(id);
     }
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable Integer id) {
         return productService.getProductById(id);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createProductWithImage(
             @RequestPart("product") String productJson,
@@ -55,12 +60,14 @@ public class ProductController {
 
         return productService.createProduct(productDto, image);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("")
     public ResponseEntity<?> createProduct(
             @RequestBody ProductDto productDto) {
         return productService.createProduct(productDto, null);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateProductWithoutImage(
             @PathVariable Integer id,
@@ -73,11 +80,13 @@ public class ProductController {
         return productService.updateProduct(productDto, image,id);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProductWithoutImage(@PathVariable Integer id, @Valid @RequestBody ProductDto productDto) {
         return productService.updateProduct(id, productDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
         return productService.deleteProduct(id);
