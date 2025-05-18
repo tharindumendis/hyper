@@ -353,9 +353,9 @@
             row.innerHTML = `
                     <td>${item.product ? item.product.name : 'Product #' + item.productId}</td>
                     <td>${item.quantity}</td>
-                    <td>$${item.unitPrice.toFixed(2)}</td>
-                    <td>$${item.discount.toFixed(2)}</td>
-                    <td>$${item.amount.toFixed(2)}</td>
+                    <td>Rs.${item.unitPrice.toFixed(2)}</td>
+                    <td>${item.discount.toFixed(2)}</td>
+                    <td>Rs.${item.amount.toFixed(2)}</td>
                 `;
 
             itemsTable.appendChild(row);
@@ -365,9 +365,9 @@
         });
 
         // Update totals
-        document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-        document.getElementById('totalDiscount').textContent = `$${totalDiscount.toFixed(2)}`;
-        document.getElementById('total').textContent = `$${invoice.total.toFixed(2)}`;
+        document.getElementById('subtotal').textContent = `Rs.${subtotal.toFixed(2)}`;
+        document.getElementById('totalDiscount').textContent = `Rs.${totalDiscount.toFixed(2)}`;
+        document.getElementById('total').textContent = `Rs.${invoice.total.toFixed(2)}`;
     }
 
     function formatDate(dateString) {
