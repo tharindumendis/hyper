@@ -9,7 +9,7 @@ import com.pos.hyper.model.customer.Customer;
 import com.pos.hyper.model.invoice.Invoice;
 import com.pos.hyper.model.invoice.InvoiceMapper;
 import com.pos.hyper.model.invoiceStockConsumption.InvoiceStockConsumption;
-import com.pos.hyper.Security.InvoiceStockConsumptionService;
+import com.pos.hyper.service.InvoiceStockConsumptionService;
 import com.pos.hyper.model.product.Product;
 import com.pos.hyper.model.product.ProductMapper;
 import com.pos.hyper.service.ProductService;
