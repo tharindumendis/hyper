@@ -1,4 +1,4 @@
-package com.pos.hyper.Security;
+package com.pos.hyper.service;
 
 import com.pos.hyper.model.invoiceStockConsumption.InvoiceStockConsumption;
 import com.pos.hyper.repository.InvoiceStockConsumptionRepository;
